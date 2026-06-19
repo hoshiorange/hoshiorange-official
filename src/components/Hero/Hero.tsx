@@ -19,17 +19,11 @@ export function Hero() {
         </div>
 
         <h1 className={styles.title}>
-          {/* TODO: 文面を差し替える */}
-          <span className={styles.titleLine1}>夜空に届け、</span>
-          <span className={styles.titleLine2}>
-            <span className={styles.titleAccent}>ほし</span>のつぶやき。
+          <span className={styles.titleName}>{profile.displayName}</span>
+          <span className={styles.titleSub}>
+            {profile.handle} <span className={styles.titleDash}>—</span> Official Hub
           </span>
         </h1>
-
-        <p className={styles.sub}>
-          {/* TODO: 文面を差し替える */}
-          {profile.subTagline}
-        </p>
 
         <p className={styles.lead}>{profile.heroLead}</p>
 

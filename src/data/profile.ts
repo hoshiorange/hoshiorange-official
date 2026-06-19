@@ -5,12 +5,8 @@
 export const profile = {
   /** サイト上の表示名 */
   displayName: 'ほし',
-  /** 英表記（URL / OGP 等で使用） */
+  /** 英表記（URL / OGP / Hero 見出しのサブラベル等で使用） */
   handle: 'hoshiorange',
-  /** ヒーローのキャッチコピー（仮） */
-  tagline: '夜空に届け、ほしのつぶやき。',
-  /** サブコピー */
-  subTagline: 'ゲーム、創作、コード。三つの軌道を行き来する個人ハブ。',
   /** Hero のリード文（活動拠点であることを示す。旧 About の役割を統合） */
   heroLead:
     'ほしの活動拠点です。X や YouTube など、いろんな場所での活動をここにまとめています。',
