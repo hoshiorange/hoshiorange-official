@@ -29,7 +29,7 @@ src/
     sitemap.ts / robots.ts / opengraph-image.tsx (next/og, edge runtime)
   components/
     Header/              ← ロゴ + アンカーナビ + ThemeToggle、スクロールで半透明化、モバイルメニュー
-    Hero/                ← 大見出し「hoshiorange」 + Official Hub バッジ + リード文(旧Aboutの役割を統合) + 軌道リング + ロゴ + CTA + スクロールヒント
+    Hero/                ← h1「hoshiorange」+小「official」(シック/白基調・細字・字間広・極細オレンジ下線、グラデ/グロー廃止) + リード文(旧Aboutの役割を統合) + 軌道リング + ロゴ + CTA + スクロールヒント（badge は撤去済み）
     LinkCards/           ← データ駆動カード（Coming Soon 対応）
     YouTubeLatest/       ← Server Component、ISR 1h、env 未設定でもフォールバック
     XTimeline/           ← クライアントで widgets.js 動的読み込み、テーマ切替で再描画

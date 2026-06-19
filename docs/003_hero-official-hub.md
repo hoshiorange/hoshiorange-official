@@ -71,3 +71,31 @@ Hero のポエム調キャッチコピー（「夜空に届け、ほしのつぶ
 ### 完了報告（追記分）
 - h1 は「**hoshiorange**（オレンジグラデ＋下線グロウ）」単独の大見出しに。"Official Hub" は上部 badge のみが担当し重複解消。heroLead は維持。
 - `npm run build` 成功・型エラー/未使用 import なし。
+
+## 追記2：見出しを「hoshiorange official」へ＋シック化
+ユーザー指示により (1) 見出し文言を「**hoshiorange official**」に、(2) フォントの主張を控えめ・シックな高級感へ調整。
+
+### バッジ "Official Hub" の処理
+h1 に "official" が入ると上部 badge "Official Hub" と意味が重複しうるさいため、**badge（`.badge` / `.dot` / `pulse`）を完全撤去**。h1 自身が役割（公式ハブであること）を担う構成へ一本化した。
+
+### シック化の方針と具体変更
+- **色**：`.titleName` のオレンジ全面グラデ（`linear-gradient` + `background-clip: text`）を廃止し、**白〜オフホワイト基調 `color: var(--fg)`** に。オレンジは差し色のみ＝下線の極細ラインに `color-mix(var(--accent) 70%)` で薄く残す。
+- **グロー**：旧 `::after` の `filter: blur(8px)` のぼかし発光（`height: 0.12em`）を**廃止**。代わりに `height: 1px` の静かな極細アンダーライン（中央 2.2em 幅・グローなし・opacity 0.8）に置換。
+- **ウェイト**：`.title` を `font-weight: 700` → `400`、`.titleName` を `500` に。重さを抑え端正に。
+- **字間**：`.titleName` に `letter-spacing: 0.04em`（旧 `-0.01em` の詰めから開きへ）。`.titleOfficial` は `0.42em` の広い字間 + uppercase で静かなラベル感。
+- **サイズ**：`.titleName` を `clamp(2.8rem, 9vw, 6rem)` → `clamp(2.4rem, 7.5vw, 5rem)` に縮小し余白で落ち着きを出す。
+- **文言構成**：h1 を `hoshiorange`（`.titleName`）＋ `official`（`.titleOfficial`、小・細・字間広）の2要素に。official は handle 下に小さく従属配置。
+
+### 変更ファイルと要点（追記2分）
+- `src/components/Hero/Hero.tsx`
+  - badge ブロック（`.badge` / `.dot` / "Official Hub"）を削除。
+  - h1 を `<span class="titleName">{profile.handle}</span>` + `<span class="titleOfficial">official</span>` の2段構成に。
+- `src/components/Hero/Hero.module.css`
+  - `.badge` / `.dot` / `@keyframes pulse` を削除。
+  - `.title` のウェイト・gap 調整。`.titleName` を白基調・細め・字間広め・サイズ縮小に作り替え、`::after` を極細静ラインへ。`.titleOfficial` を新規追加。
+  - `prefers-reduced-motion` 停止リストから `.badge` / `.dot` を除去（削除済みクラスのため）。`.title` 等は維持。
+
+### 完了報告（追記2分）
+- 見出しは「**hoshiorange**（白〜オフホワイト・細め・字間広め・中央に極細オレンジ下線）」＋ その下に小さく「**official**」（字間を広げた静かな小文字ラベル）。派手なオレンジ塗り・ぼかし発光を排し、余白と細字で上品・シックな印象に。badge は撤去し重複解消。
+- ダーク／ライトとも `var(--fg)` / `var(--accent)` / `var(--fg-muted)` で配色し両テーマ整合。
+- `npm run build` 成功・型エラー/未使用 import なし。実際の色味最終判断は dev でユーザーが確認予定。

@@ -62,42 +62,12 @@
   gap: 28px;
 }
 
-.badge {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px 14px;
-  border-radius: 999px;
-  background: var(--bg-card);
-  border: 1px solid var(--border);
-  font-size: 0.74rem;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--fg-soft);
-  backdrop-filter: blur(8px);
-  animation: fadeUp 0.9s ease both;
-}
-
-.dot {
-  width: 6px;
-  height: 6px;
-  border-radius: 50%;
-  background: var(--accent);
-  box-shadow: 0 0 0 4px color-mix(in srgb, var(--accent) 25%, transparent);
-  animation: pulse 2.4s ease-in-out infinite;
-}
-
-@keyframes pulse {
-  0%, 100% { transform: scale(1); opacity: 1; }
-  50% { transform: scale(1.3); opacity: 0.65; }
-}
-
 .title {
   display: flex;
   flex-direction: column;
   align-items: center;
-  font-weight: 700;
-  letter-spacing: -0.02em;
+  gap: 0.5em;
+  font-weight: 400;
   line-height: 1.1;
   animation: fadeUp 1s ease 0.1s both;
 }
@@ -105,26 +75,41 @@
 .titleName {
   position: relative;
   display: inline-block;
-  font-size: clamp(2.8rem, 9vw, 6rem);
+  font-size: clamp(2.4rem, 7.5vw, 5rem);
   line-height: 1;
-  padding: 0 0.05em;
-  letter-spacing: -0.01em;
-  background: linear-gradient(135deg, var(--accent-soft) 0%, var(--accent) 50%, #ff5e1f 100%);
-  background-clip: text;
-  -webkit-background-clip: text;
-  color: transparent;
+  padding-bottom: 0.18em;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--fg);
 }
 
+/* 控えめな差し色：細い静かなアンダーライン（グローなし） */
 .titleName::after {
   content: '';
   position: absolute;
-  left: 0;
-  bottom: -0.05em;
-  width: 100%;
-  height: 0.12em;
-  background: linear-gradient(90deg, transparent, var(--accent), transparent);
-  filter: blur(8px);
-  opacity: 0.65;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 2.2em;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 70%, transparent),
+    transparent
+  );
+  opacity: 0.8;
+}
+
+.titleOfficial {
+  display: inline-block;
+  font-size: clamp(0.72rem, 1.8vw, 1rem);
+  font-weight: 400;
+  letter-spacing: 0.42em;
+  /* 字間を空けた分、右側の余白を相殺して中央寄せの見えを整える */
+  text-indent: 0.42em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
 }
 
 .lead {
@@ -242,14 +227,12 @@
 @media (prefers-reduced-motion: reduce) {
   .atmosphere,
   .orbit span,
-  .badge,
   .title,
   .lead,
   .ctas,
   .logoFrame,
   .scrollHint,
-  .scrollLine,
-  .dot {
+  .scrollLine {
     animation: none !important;
   }
 }

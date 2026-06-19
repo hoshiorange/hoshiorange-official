@@ -13,13 +13,9 @@ export function Hero() {
       </div>
 
       <div className={styles.inner}>
-        <div className={styles.badge}>
-          <span className={styles.dot} />
-          <span>Official Hub</span>
-        </div>
-
         <h1 className={styles.title}>
           <span className={styles.titleName}>{profile.handle}</span>
+          <span className={styles.titleOfficial}>official</span>
         </h1>
 
         <p className={styles.lead}>{profile.heroLead}</p>
