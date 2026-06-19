@@ -48,3 +48,26 @@ Hero のポエム調キャッチコピー（「夜空に届け、ほしのつぶ
 - `tagline` / `subTagline` はコード・metadata 全体で未使用（subTagline は Hero の1箇所のみ）と確認し、安全に削除。
 - `npm run build` 成功。型エラー・未使用 import なし。
 - 流体タイポ（clamp）・`prefers-reduced-motion` 停止の整合を維持。
+
+## 追記：微修正（大「ほし」を削除し hoshiorange を主役へ）
+ユーザー指示により、h1 の大きな「ほし」(`titleName` = `displayName`) は不要となったため削除。
+「hoshiorange」(`profile.handle`) を主役の大見出しにする（旧・案A 寄りの構成）。
+
+### "Official Hub" 重複の解消方針
+従来は badge と h1 サブラベルの両方に "Official Hub" があり重複していた。
+**badge "Official Hub" を残し、h1 サブラベル（`.titleSub` / `.titleDash` の "hoshiorange — Official Hub" 行）を撤去**して解消。
+"ほし" を消すとサブラベルのダッシュ装飾も不自然になるため、h1 は **「hoshiorange」単独**のクリーンな構成にした。
+誰のサイトかは heroLead（「ほしの活動拠点です…」）で引き続き伝わる。
+
+### 変更ファイルと要点（追記分）
+- `src/components/Hero/Hero.tsx`
+  - h1 の中身を `<span class="titleName">{profile.handle}</span>` のみに変更（大「ほし」=`displayName` と `titleSub`/`titleDash` を削除）。
+  - badge・lead・CTA・ロゴは従来どおり。`profile` は `handle` / `heroLead` で引き続き使用。
+- `src/components/Hero/Hero.module.css`
+  - `.titleSub` / `.titleDash` を削除。`.title` の `gap: 0.35em`（2段組み用）を撤去。
+  - `.titleName` を英字 1 単語「hoshiorange」向けに調整：`font-size` を `clamp(3.2rem, 11vw, 7rem)` → `clamp(2.8rem, 9vw, 6rem)`、`letter-spacing: -0.01em` を追加（長い英字でのはみ出し抑制）。オレンジグラデ＋下線グロウは維持。
+  - `prefers-reduced-motion` 停止リストはそのまま整合（削除クラスは元々非対象）。
+
+### 完了報告（追記分）
+- h1 は「**hoshiorange**（オレンジグラデ＋下線グロウ）」単独の大見出しに。"Official Hub" は上部 badge のみが担当し重複解消。heroLead は維持。
+- `npm run build` 成功・型エラー/未使用 import なし。

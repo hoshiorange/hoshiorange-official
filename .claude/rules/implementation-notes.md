@@ -29,7 +29,7 @@ src/
     sitemap.ts / robots.ts / opengraph-image.tsx (next/og, edge runtime)
   components/
     Header/              ← ロゴ + アンカーナビ + ThemeToggle、スクロールで半透明化、モバイルメニュー
-    Hero/                ← キャッチコピー + リード文(旧Aboutの役割を統合) + 軌道リング + ロゴ + CTA + スクロールヒント
+    Hero/                ← 大見出し「hoshiorange」 + Official Hub バッジ + リード文(旧Aboutの役割を統合) + 軌道リング + ロゴ + CTA + スクロールヒント
     LinkCards/           ← データ駆動カード（Coming Soon 対応）
     YouTubeLatest/       ← Server Component、ISR 1h、env 未設定でもフォールバック
     XTimeline/           ← クライアントで widgets.js 動的読み込み、テーマ切替で再描画
@@ -59,12 +59,11 @@ docs/
 - pillars（🎮🎨💻 の 3 カード）は About.tsx 内ローカル定数で他に再利用が無かったため、About と共に削除。将来は別タスクで別の見せ方を検討。
 - `#about` 参照を解消: Header / Footer ナビから About 項目を削除。Hero の ghost CTA は `#contact`（お仕事のご相談）、scrollHint は `#links` に変更。
 
-## Hero「Official Hub」構成（003 / 案B）
-- h1 のポエム調キャッチ（`tagline`）と星比喩サブコピー（`subTagline`）を廃止し、表示名主役の見出しに変更。
-- h1 = 大「ほし」（`profile.displayName`／`.titleName`：オレンジグラデ＋下線グロウ）＋ 小英字行「hoshiorange — Official Hub」（`profile.handle`／`.titleSub`、`.titleDash` でダッシュをアクセント色）。
-- subTagline の `<p class="sub">` を削除。badge "Official Hub" と `heroLead`（`.lead`）は維持。
-- `profile.tagline` / `profile.subTagline` は全コード・metadata で未参照と確認し `src/data/profile.ts` から削除。
-- CSS: `.title` を縦フレックス2段組みに。旧 `.titleLine1/2` `.titleAccent` `.sub` を削除。`prefers-reduced-motion` 停止リストから `.sub` を除去（`clamp` 流体タイポ・モーション停止の整合維持）。
+## Hero「Official Hub」構成（003 / 案B → 案A 寄りに微修正）
+- h1 のポエム調キャッチ（`tagline`）と星比喩サブコピー（`subTagline`）を廃止し、`profile.tagline` / `profile.subTagline` は `src/data/profile.ts` から削除（全コード・metadata で未参照を確認済）。
+- **現状（最新）**: h1 = **「hoshiorange」単独**の大見出し（`profile.handle`／`.titleName`：オレンジグラデ＋下線グロウ、`clamp(2.8rem, 9vw, 6rem)` + `letter-spacing: -0.01em`）。大「ほし」(`displayName`) は削除。
+- "Official Hub" は **上部 badge のみ**が担当（重複解消のため h1 サブラベルを撤去）。`heroLead`（`.lead`）は維持。
+- CSS: `.title` は縦フレックス（1 要素）。`.titleName` のみ使用し、旧 `.titleSub` / `.titleDash` / `.titleLine1/2` / `.titleAccent` / `.sub` は削除済。`clamp` 流体タイポ・`prefers-reduced-motion` 停止の整合を維持。
 
 ## スタイリング方針
 - CSS 変数で配色・シャドウを定義（ダーク基準 `:root` / ライト `[data-theme='light']`）

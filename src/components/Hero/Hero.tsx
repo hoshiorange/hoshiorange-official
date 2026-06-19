@@ -19,10 +19,7 @@ export function Hero() {
         </div>
 
         <h1 className={styles.title}>
-          <span className={styles.titleName}>{profile.displayName}</span>
-          <span className={styles.titleSub}>
-            {profile.handle} <span className={styles.titleDash}>—</span> Official Hub
-          </span>
+          <span className={styles.titleName}>{profile.handle}</span>
         </h1>
 
         <p className={styles.lead}>{profile.heroLead}</p>
