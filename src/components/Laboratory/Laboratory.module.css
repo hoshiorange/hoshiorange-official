@@ -92,9 +92,29 @@
   transition: color 0.3s ease, transform 0.3s ease;
 }
 
-.card:hover .iconWrap {
+.card:not(.coming):hover .iconWrap {
   color: var(--accent);
   transform: rotate(-6deg);
+}
+
+.tagOpen,
+.tagSoon {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.tagOpen {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.tagSoon {
+  color: var(--fg-muted);
+  background: var(--bg-elevated);
+  border: 1px dashed var(--border-strong);
 }
 
 .cardTitle {
@@ -107,6 +127,25 @@
   font-size: 0.88rem;
   color: var(--fg-muted);
   line-height: 1.7;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 2px 0 0;
+}
+
+.tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--fg-muted);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
 }
 
 .arrow {
@@ -148,6 +187,19 @@
 }
 
 /* カテゴリ別の差し色 */
-.category_sns .iconWrap { background: linear-gradient(135deg, rgba(120, 200, 255, 0.25), transparent 70%); }
-.category_creative .iconWrap { background: linear-gradient(135deg, rgba(255, 140, 42, 0.3), transparent 70%); }
-.category_tech .iconWrap { background: linear-gradient(135deg, rgba(180, 160, 255, 0.25), transparent 70%); }
+.category_service .iconWrap { background: linear-gradient(135deg, rgba(120, 200, 255, 0.25), transparent 70%); }
+.category_site .iconWrap { background: linear-gradient(135deg, rgba(255, 140, 42, 0.3), transparent 70%); }
+.category_game .iconWrap { background: linear-gradient(135deg, rgba(180, 160, 255, 0.25), transparent 70%); }
+.category_community .iconWrap { background: linear-gradient(135deg, rgba(120, 255, 200, 0.22), transparent 70%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .glow,
+  .iconWrap,
+  .arrow {
+    transition: none;
+  }
+  .card:not(.coming):hover {
+    transform: none;
+  }
+}

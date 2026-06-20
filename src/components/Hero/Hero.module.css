@@ -24,73 +24,71 @@
   to { transform: scale(1.08); opacity: 1; }
 }
 
-.orbit {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  z-index: -1;
-  pointer-events: none;
-}
-.orbit span {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  border-radius: 50%;
-  border: 1px solid var(--border);
-  transform: translate(-50%, -50%);
-  opacity: 0.35;
-}
-.orbit span:nth-child(1) { width: 360px; height: 360px; animation: spin 80s linear infinite; }
-.orbit span:nth-child(2) { width: 560px; height: 560px; animation: spin 120s linear infinite reverse; opacity: 0.22; }
-.orbit span:nth-child(3) { width: 820px; height: 820px; opacity: 0.12; }
-
-@keyframes spin {
-  from { transform: translate(-50%, -50%) rotate(0); }
-  to { transform: translate(-50%, -50%) rotate(360deg); }
-}
-
 .inner {
   position: relative;
   z-index: 1;
-  width: min(960px, calc(100% - 2.5rem));
+  width: min(1120px, calc(100% - 2.5rem));
   margin-inline: auto;
+  /* モバイル基準：縦積み・中央寄せ */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
   text-align: center;
+  gap: 28px;
+}
+
+/* 左カラム：テキスト群 */
+.copy {
   display: flex;
   flex-direction: column;
   align-items: center;
   gap: 28px;
 }
 
-.title {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.5em;
-  font-weight: 400;
-  line-height: 1.1;
-  animation: fadeUp 1s ease 0.1s both;
+/* PC（広い画面）：左テキスト・右3D の2カラム */
+@media (min-width: 860px) {
+  .inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    gap: clamp(32px, 5vw, 72px);
+  }
+
+  .copy {
+    align-items: flex-start;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .visual {
+    flex: 0 0 auto;
+  }
 }
 
-.titleName {
+.title {
   position: relative;
   display: inline-block;
-  font-size: clamp(2.4rem, 7.5vw, 5rem);
-  line-height: 1;
-  padding-bottom: 0.18em;
+  max-width: 100%;
+  /* 1 語で長くなるので vw 主体で縮め、はみ出し時は折り返す */
+  font-size: clamp(1.9rem, 6.2vw, 4.2rem);
+  line-height: 1.1;
+  padding-bottom: 0.2em;
   font-weight: 500;
   letter-spacing: 0.04em;
   color: var(--fg);
+  overflow-wrap: break-word;
+  animation: fadeUp 1s ease 0.1s both;
 }
 
 /* 控えめな差し色：細い静かなアンダーライン（グローなし） */
-.titleName::after {
+.title::after {
   content: '';
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
   bottom: 0;
-  width: 2.2em;
+  width: 2.6em;
   height: 1px;
   background: linear-gradient(
     90deg,
@@ -101,15 +99,15 @@
   opacity: 0.8;
 }
 
-.titleOfficial {
-  display: inline-block;
-  font-size: clamp(0.72rem, 1.8vw, 1rem);
-  font-weight: 400;
-  letter-spacing: 0.42em;
-  /* 字間を空けた分、右側の余白を相殺して中央寄せの見えを整える */
-  text-indent: 0.42em;
-  text-transform: uppercase;
-  color: var(--fg-muted);
+/* PC：アンダーラインをタイトル左端基準に、CTA を左寄せに */
+@media (min-width: 860px) {
+  .title::after {
+    left: 0;
+    transform: none;
+  }
+  .ctas {
+    justify-content: flex-start;
+  }
 }
 
 .lead {
@@ -166,30 +164,29 @@
   transform: translateY(-2px);
 }
 
-.logoFrame {
+/* 統合3Dシーンのビジュアル領域
+   - 文字/CTA を主役に保ちつつ、その下に星＋ロゴ軌道を据える
+   - Canvas 自体がポインタ操作を拾うため pointer-events は有効
+   - モバイルで大きすぎないよう clamp で高さを抑える */
+.visual {
   position: relative;
-  margin-top: 16px;
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  animation: float 6s ease-in-out infinite, fadeUp 1.2s ease 0.5s both;
+  margin-top: 8px;
+  width: min(560px, 92vw);
+  height: clamp(260px, 42vh, 440px);
+  touch-action: none; /* ドラッグ回転中の画面スクロール暴発を防ぐ */
+  animation: fadeUp 1.2s ease 0.5s both;
+}
+.visual canvas {
+  display: block;
 }
 
-@keyframes float {
-  0%, 100% { transform: translateY(0); }
-  50% { transform: translateY(-8px); }
-}
-
-.logoGlow {
-  position: absolute;
-  inset: -30%;
-  background: radial-gradient(circle, var(--accent-glow), transparent 60%);
-  filter: blur(20px);
-  z-index: -1;
-}
-
-.logo {
-  filter: drop-shadow(0 6px 24px var(--accent-glow));
+/* PC：右カラムで映えるサイズ。左カラムを圧迫しすぎない幅に抑える */
+@media (min-width: 860px) {
+  .visual {
+    margin-top: 0;
+    width: clamp(360px, 42vw, 520px);
+    height: clamp(360px, 50vh, 520px);
+  }
 }
 
 .scrollHint {
@@ -226,11 +223,10 @@
 
 @media (prefers-reduced-motion: reduce) {
   .atmosphere,
-  .orbit span,
   .title,
   .lead,
   .ctas,
-  .logoFrame,
+  .visual,
   .scrollHint,
   .scrollLine {
     animation: none !important;

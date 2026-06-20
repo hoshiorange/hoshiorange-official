@@ -12,7 +12,12 @@ export function ThemeToggle() {
     setMounted(true);
   }, []);
 
-  const label = theme === 'dark' ? 'ライトモードに切り替える' : 'ダークモードに切り替える';
+  // マウント前は SSR と一致させるためダーク固定（FOUC 防止スクリプトと揃える）
+  const current = mounted ? theme : 'dark';
+  const isDark = current === 'dark';
+
+  // ラベルは「次にどうなるか」を伝える（押下後のアクション）
+  const label = isDark ? 'ライトモードに切り替える' : 'ダークモードに切り替える';
 
   return (
     <button
@@ -21,33 +26,25 @@ export function ThemeToggle() {
       aria-label={label}
       title={label}
       onClick={toggleTheme}
-      data-theme={mounted ? theme : 'dark'}
+      data-theme={current}
+      // 「ダークが押された（=有効）」状態を支援技術に伝える
+      aria-pressed={isDark}
     >
-      <span className={styles.track} aria-hidden="true">
-        <span className={styles.sun}>
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none">
-            <circle cx="12" cy="12" r="4" fill="currentColor" />
-            <g stroke="currentColor" strokeWidth="1.8" strokeLinecap="round">
-              <line x1="12" y1="2.5" x2="12" y2="5" />
-              <line x1="12" y1="19" x2="12" y2="21.5" />
-              <line x1="2.5" y1="12" x2="5" y2="12" />
-              <line x1="19" y1="12" x2="21.5" y2="12" />
-              <line x1="5" y1="5" x2="6.8" y2="6.8" />
-              <line x1="17.2" y1="17.2" x2="19" y2="19" />
-              <line x1="5" y1="19" x2="6.8" y2="17.2" />
-              <line x1="17.2" y1="6.8" x2="19" y2="5" />
-            </g>
+      <span className={styles.iconStack} aria-hidden="true">
+        {/* 太陽（ライトモード適用中に前面・アクセント色で点灯） */}
+        <span className={`${styles.icon} ${styles.sun}`}>
+          {/* MUI LightMode アイコン（MIT, 24x24） */}
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M12 9c1.65 0 3 1.35 3 3s-1.35 3-3 3-3-1.35-3-3 1.35-3 3-3m0-2c-2.76 0-5 2.24-5 5s2.24 5 5 5 5-2.24 5-5-2.24-5-5-5zM2 13h2c.55 0 1-.45 1-1s-.45-1-1-1H2c-.55 0-1 .45-1 1s.45 1 1 1zm18 0h2c.55 0 1-.45 1-1s-.45-1-1-1h-2c-.55 0-1 .45-1 1s.45 1 1 1zM11 2v2c0 .55.45 1 1 1s1-.45 1-1V2c0-.55-.45-1-1-1s-1 .45-1 1zm0 18v2c0 .55.45 1 1 1s1-.45 1-1v-2c0-.55-.45-1-1-1s-1 .45-1 1zM5.99 4.58c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0s.39-1.03 0-1.41L5.99 4.58zm12.37 12.37c-.39-.39-1.03-.39-1.41 0-.39.39-.39 1.03 0 1.41l1.06 1.06c.39.39 1.03.39 1.41 0 .39-.39.39-1.03 0-1.41l-1.06-1.06zm1.06-10.96c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06zM7.05 18.36c.39-.39.39-1.03 0-1.41-.39-.39-1.03-.39-1.41 0l-1.06 1.06c-.39.39-.39 1.03 0 1.41s1.03.39 1.41 0l1.06-1.06z" />
           </svg>
         </span>
-        <span className={styles.moon}>
-          <svg viewBox="0 0 24 24" width="14" height="14" fill="none">
-            <path
-              d="M19 14.5A8 8 0 0 1 9.5 5a8 8 0 1 0 9.5 9.5z"
-              fill="currentColor"
-            />
+        {/* 月（ダークモード適用中に前面・アクセント色で点灯） */}
+        <span className={`${styles.icon} ${styles.moon}`}>
+          {/* MUI DarkMode アイコン（MIT, 24x24） */}
+          <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor">
+            <path d="M12 3c-4.97 0-9 4.03-9 9s4.03 9 9 9 9-4.03 9-9c0-.46-.04-.92-.1-1.36-.98 1.37-2.58 2.26-4.4 2.26-2.98 0-5.4-2.42-5.4-5.4 0-1.81.89-3.42 2.26-4.4C12.92 3.04 12.46 3 12 3z" />
           </svg>
         </span>
-        <span className={styles.knob} />
       </span>
     </button>
   );

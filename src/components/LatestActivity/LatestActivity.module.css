@@ -1,0 +1,30 @@
+.section {
+  /* 短くても 1 画面分を占有し、下端から次セクションが覗かないようにする。
+     min-height なので中身が多ければ自動で伸びる（切れない）。 */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* 固定ヘッダー分のオフセット（アンカー遷移時に見出しが隠れない） */
+  scroll-margin-top: var(--header-h);
+  padding: 80px 0 120px;
+}
+.container {
+  width: min(1180px, calc(100% - 2.5rem));
+  margin-inline: auto;
+}
+
+/* PC: 左に YouTube（可変・主役）/ 右に X タイムライン（固定幅寄り） */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (min-width: 960px) {
+  .grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 32px;
+  }
+}

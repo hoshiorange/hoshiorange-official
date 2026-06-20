@@ -10,11 +10,45 @@ export const profile = {
   /** Hero のリード文（活動拠点であることを示す。旧 About の役割を統合） */
   heroLead:
     'ほしの活動拠点です。X や YouTube など、いろんな場所での活動をここにまとめています。',
-  /** Contact メール（仮） */
+  /**
+   * Contact メール（未使用：現在の連絡導線は X のみ）。
+   * UI からは参照していないが、将来メール窓口を復活させる場合に備えて残置。
+   */
   contactEmail: 'contact@hoshiorange.example',
-  /** Contact 本文（仮） */
+  /** Contact 本文（仮）。各 SNS 共通ハンドルでの連絡を促す案内（シックなトーン）。 */
   contactBody:
-    'お仕事のご依頼・コラボのお声がけ・案件の相談などお気軽にどうぞ。返信できる範囲で順次お返事します。',
+    'X や Discord など、ユーザー名「hoshiorange」までお気軽にご連絡ください。お仕事のご依頼・コラボ・ご相談など、返信できる範囲で順次お返事します。',
+  /**
+   * Contact で主役として大きく提示する共通ハンドル名。
+   * 各 SNS（X / ツイキャス等）で同じユーザー名を使っている前提で、
+   * 「hoshiorange で見つけて連絡してね」というニュアンスを伝える。
+   */
+  contactHandle: 'hoshiorange',
+  /**
+   * 各 SNS の連絡導線。共通ハンドル「hoshiorange」で連絡してもらう想定。
+   * - href あり … クリックできるリンクとして表示（X など）
+   * - href なし … リンク不可なのでコピーしやすいテキストで表示（Discord はユーザー名のみ）
+   * primary はリンク項目の中で 1 つだけ強調する CTA フラグ。
+   * 将来 Discord の招待 URL 等が用意できたら href を足すだけでリンク化できる。
+   */
+  contactLinks: [
+    {
+      kind: 'X',
+      label: 'X で hoshiorange を見る',
+      href: 'https://x.com/hoshiorange',
+      primary: true,
+    },
+    {
+      kind: 'Discord',
+      // href 無し：Discord ユーザー名は URL 直リンク不可のためテキスト表示（コピー用）
+      label: 'Discord: hoshiorange',
+    },
+  ] as ReadonlyArray<{
+    kind: 'X' | 'Discord';
+    label: string;
+    href?: string;
+    primary?: boolean;
+  }>,
   /** 著作権表記 */
   copyright: '© hoshiorange',
 } as const;

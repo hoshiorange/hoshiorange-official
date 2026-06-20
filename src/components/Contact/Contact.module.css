@@ -1,18 +1,44 @@
 .section {
+  /* 短くても 1 画面分を占有し、下端から次セクションが覗かないようにする。
+     min-height なので中身が多ければ自動で伸びる（切れない）。 */
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* 固定ヘッダー分のオフセット（アンカー遷移時に見出しが隠れない） */
+  scroll-margin-top: var(--header-h);
   padding: 80px 0 120px;
+  /* 背景レイヤーの星のグロー（Bloom）がセクション外へ漏れないよう刈り取る。
+     これで透過 Canvas でも“箱”の輪郭が出ず、星空に溶け込む。 */
+  overflow: hidden;
+  isolation: isolate;
 }
 .container {
-  width: min(900px, calc(100% - 2.5rem));
+  position: relative;
+  z-index: 1;
+  width: min(1080px, calc(100% - 2.5rem));
   margin-inline: auto;
 }
+
+/* PC: 左カード / 右星 の2カラム。
+   モバイル: 1カラムに畳んで カード→星 の縦積み（後述のメディアクエリ）。 */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
+  align-items: center;
+  gap: clamp(24px, 4vw, 56px);
+}
+
 .card {
   position: relative;
-  padding: 64px 40px;
+  padding: 56px 44px;
   border-radius: 28px;
   background: var(--bg-card);
   border: 1px solid var(--border);
   backdrop-filter: blur(16px);
-  text-align: center;
+  text-align: left;
   overflow: hidden;
   isolation: isolate;
 }
@@ -32,11 +58,52 @@
   to { transform: scale(1.1) translate3d(-2%, 2%, 0); }
 }
 
+/* ほし本人＝光る星（案B）の右カラム領域（独立／カードと重ねない）。
+   - 透過 Canvas（gl alpha + 背景塗りなし）なので、四角い箱は出ず星だけが背景の星空に浮かぶ。
+   - Bloom のにじみが作る“矩形の縁”を放射状マスクでフェードさせ、輪郭を消して溶け込ませる。
+   - ドラッグ回転を残すため pointer-events は有効。touch-action:none でスクロール暴発を防ぐ。 */
+.visual {
+  position: relative;
+  width: 100%;
+  height: clamp(300px, 46vh, 460px);
+  pointer-events: auto;
+  touch-action: none;
+  -webkit-mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, #000 38%, transparent 74%);
+  mask-image: radial-gradient(ellipse 62% 62% at 50% 50%, #000 38%, transparent 74%);
+  animation: floatIn 1.4s ease 0.1s both;
+}
+.visual canvas {
+  display: block;
+}
+@keyframes floatIn {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+/* 各 SNS 共通ハンドル名の大きな提示（Contact の主役）。
+   @ をアクセント色、本体を高コントラストの fg で“見つけてもらう名前”を強調。 */
+.handle {
+  /* @ と本体を inline-flex ではなく通常のインライン整形にして、
+     幅が足りなければ自然に折り返す（flex アイテム化で折り返さない問題を回避）。 */
+  margin: 26px 0 18px;
+  font-size: clamp(1.6rem, 4.4vw, 2.9rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  line-height: 1.1;
+  color: var(--fg);
+  overflow-wrap: anywhere;
+}
+.handleAt {
+  color: var(--accent);
+  font-weight: 600;
+  margin-right: 0.04em;
+}
+
 .actions {
-  display: inline-flex;
+  display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 16px;
   margin-top: 8px;
 }
@@ -67,9 +134,83 @@
   color: var(--fg-soft);
   font-size: 0.95rem;
 }
+/* 二次的な連絡 CTA（将来の Discord 等）用のゴーストボタン。
+   現状は primary（X）のみ表示のため未使用だが、配列に primary:false を足せば現れる。 */
+.secondaryLink {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 14px 24px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.95rem;
+  color: var(--fg);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+.secondaryLink:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+/* Discord など href の無い連絡手段のテキスト表示（コピー用）。
+   クリックできるボタンと区別がつくよう、枠線/塗りは控えめにし、
+   テキストとして選択しやすい（user-select 可・カーソル text）。 */
+.handleText {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  padding: 13px 22px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--fg-soft);
+  background: color-mix(in srgb, var(--fg) 6%, transparent);
+  border: 1px solid var(--border);
+  cursor: text;
+  user-select: text;
+}
+.handleText svg {
+  color: var(--accent);
+  flex: none;
+}
+
 .note {
   margin-top: 28px;
   color: var(--fg-muted);
   font-size: 0.86rem;
   line-height: 1.85;
+}
+
+/* モバイル/タブレット縦: 1カラムに畳み、カード（上）→星（下）の縦積み。
+   文字が主役なのでカードを上に。カード内は中央寄せに戻して収まりよく。 */
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+    gap: clamp(8px, 3vw, 24px);
+  }
+  .card {
+    padding: 48px 28px;
+    text-align: center;
+  }
+  .handle {
+    font-size: clamp(1.5rem, 7vw, 2.4rem);
+  }
+  .actions {
+    justify-content: center;
+  }
+  /* 星は縦積みの下側で控えめなサイズに。レイアウトを押し広げない。 */
+  .visual {
+    height: clamp(220px, 38vh, 320px);
+    order: 2;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora,
+  .visual {
+    animation: none !important;
+  }
 }

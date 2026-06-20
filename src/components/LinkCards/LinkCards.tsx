@@ -36,11 +36,6 @@ function Card({ item }: { item: LinkItem }) {
         <span className={styles.iconWrap}>
           <LinkIcon icon={item.icon} />
         </span>
-        {isComing ? (
-          <span className={styles.tagSoon}>Coming Soon</span>
-        ) : (
-          <span className={styles.tagOpen}>OPEN</span>
-        )}
       </div>
       <h3 className={styles.cardTitle}>{item.label}</h3>
       {item.description && <p className={styles.cardDesc}>{item.description}</p>}

@@ -27,21 +27,27 @@ src/
     globals.css          ← リセット + CSS 変数（:root と [data-theme='light']）
     icon.svg             ← favicon（Next.js が自動認識）
     sitemap.ts / robots.ts / opengraph-image.tsx (next/og, edge runtime)
+  app/
+    hero3d-preview/      ← 3D 案の比較プレビューページ（/hero3d-preview）
   components/
     Header/              ← ロゴ + アンカーナビ + ThemeToggle、スクロールで半透明化、モバイルメニュー
-    Hero/                ← h1「hoshiorange」+小「official」(シック/白基調・細字・字間広・極細オレンジ下線、グラデ/グロー廃止) + リード文(旧Aboutの役割を統合) + 軌道リング + ロゴ + CTA + スクロールヒント（badge は撤去済み）
-    LinkCards/           ← データ駆動カード（Coming Soon 対応）
+    Hero/                ← タイトル「hoshiorange-official」(シック) + リード文 + CTA(SNS=#links / 制作物=#lab) + 左右2カラム + HeroVisual(案A 3D)
+    LatestActivity/      ← YouTube 最新動画 + X タイムラインを統合した 1 セクション（Links より先）
+    LinkCards/           ← データ駆動カード（バッジ撤去。X/YouTube/ツイキャス/GitHub の URL 設定済）
+    Laboratory/          ← 制作物セクション。labs.ts が空のあいだは Coming Soon プレースホルダー
     YouTubeLatest/       ← Server Component、ISR 1h、env 未設定でもフォールバック
     XTimeline/           ← クライアントで widgets.js 動的読み込み、テーマ切替で再描画
-    Contact/             ← メール CTA + X DM 誘導
+    Contact/             ← @hoshiorange 提示（X リンク + Discord テキスト）、左右2カラム + ContactVisual(案B 3D)
+    Contact/ContactVisual.tsx ← 案B（光る星）の 3D を透過配置
+    Hero3D/              ← HeroLogo3D / HeroStar3D / HeroScene3D / HeroVisual / useReducedMotion
     Footer/              ← ブランド + ナビ + 著作権
     StarryBackground/    ← CSS のみで星空（3レイヤー＋流れ星＋オーロラ）
     ThemeProvider/       ← Context + themeInitScript（FOUC 防止）
-    ThemeToggle/         ← 月／太陽トグル
+    ThemeToggle/         ← MUI アイコン化、選択中表現を改善
     HoshiLogo/           ← SVG 直書き
     Section/             ← SectionHeading（共通見出し）
   data/
-    profile.ts / links.ts  ← 文面・リンク一覧を一箇所で管理
+    profile.ts / links.ts / labs.ts  ← 文面・リンク一覧・制作物一覧を一箇所で管理
   lib/
     youtube.ts            ← Data API v3 呼び出し（環境変数不在時は { ok: false } を返す）
   types/
@@ -50,7 +56,17 @@ docs/
   001_initial-setup.md
   002_about-into-hero.md
   003_hero-official-hub.md
+  004_session-redesign.md
 ```
+
+## 3D / レイアウト再構成（004）
+- ページ構成を `Header → Hero → LatestActivity → LinkCards → Laboratory → Contact → Footer` に再整理。
+- React Three Fiber 基盤を導入（three / @react-three/fiber / @react-three/drei / @react-three/postprocessing / @types/three）。`useReducedMotion` で動きを抑制可能。
+- Hero に案A（ロゴ＋軌道）の `HeroVisual` を、Contact に案B（光る星）の `ContactVisual` を配置。比較用に `/hero3d-preview` ページを用意。
+- Latest（YouTube + X）と Links を再整理し、Latest を先に。各セクションは `min-height: 100svh`。
+- LinkCards は OPEN/COMING SOON バッジを撤去し各 SNS の URL を設定。ThemeToggle は MUI アイコン化。
+- Contact はメール廃止 → `@hoshiorange`（X リンク＋ Discord テキスト）。
+- layout / sitemap / robots に SITE_URL フォールバックを追加。
 
 ## About セクション廃止（002）
 - About を独立セクションとして廃止し、その役割（「ほしの活動拠点であることを示す」）を Hero のリード文 1 文に統合した。

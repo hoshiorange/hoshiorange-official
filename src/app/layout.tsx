@@ -18,7 +18,24 @@ const body = Noto_Sans_JP({
   variable: '--font-body',
 });
 
-const SITE_URL = process.env.NEXT_PUBLIC_SITE_URL ?? 'http://localhost:3000';
+const DEFAULT_SITE_URL = 'http://localhost:3000';
+
+/**
+ * NEXT_PUBLIC_SITE_URL を堅牢に解決する。
+ * - 未設定 / 空文字 / 不正な URL の場合は既定値にフォールバックし、
+ *   `new URL(...)` が必ず成功するようにする（env 不正で起動が落ちないため）。
+ */
+function resolveSiteUrl(): string {
+  const raw = process.env.NEXT_PUBLIC_SITE_URL?.trim();
+  if (!raw) return DEFAULT_SITE_URL;
+  try {
+    return new URL(raw).toString().replace(/\/$/, '');
+  } catch {
+    return DEFAULT_SITE_URL;
+  }
+}
+
+const SITE_URL = resolveSiteUrl();
 const SITE_NAME = 'ほし — hoshiorange official';
 const SITE_DESCRIPTION =
   'ゲーム実況・配信、クリエイティブ制作、エンジニアリングを横断する「ほし」の公式ハブサイト。各 SNS への入口・最新動画・最新ポストをここに集約。';

@@ -1,5 +1,4 @@
 import Image from 'next/image';
-import { SectionHeading } from '@/components/Section/SectionHeading';
 import { fetchLatestYouTubeVideos } from '@/lib/youtube';
 import styles from './YouTubeLatest.module.css';
 
@@ -21,14 +20,16 @@ export async function YouTubeLatest() {
   const result = await fetchLatestYouTubeVideos(6);
 
   return (
-    <section id="youtube" className={styles.section} aria-labelledby="youtube-title">
-      <div className={styles.container}>
-        <SectionHeading
-          eyebrow="YouTube"
-          title="最新の動画。"
-          description="YouTube チャンネルから直近の投稿を自動で取得しています。"
-        />
+    <div className={styles.panel} aria-labelledby="latest-youtube-heading">
+      <div className={styles.head}>
+        <h3 id="latest-youtube-heading" className={styles.heading}>
+          <span className={styles.headingMark} aria-hidden="true" />
+          最新の動画
+        </h3>
+        <p className={styles.lead}>YouTube チャンネルから直近の投稿を自動取得。</p>
+      </div>
 
+      <div className={styles.body}>
         {result.ok ? (
           result.videos.length === 0 ? (
             <p className={styles.empty}>まだ動画がありません。最初の投稿をお楽しみに。</p>
@@ -85,6 +86,6 @@ export async function YouTubeLatest() {
           </div>
         )}
       </div>
-    </section>
+    </div>
   );
 }

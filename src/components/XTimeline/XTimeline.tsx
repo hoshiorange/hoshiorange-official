@@ -1,7 +1,6 @@
 'use client';
 
 import { useEffect, useRef, useState } from 'react';
-import { SectionHeading } from '@/components/Section/SectionHeading';
 import { useTheme } from '@/components/ThemeProvider/ThemeProvider';
 import styles from './XTimeline.module.css';
 
@@ -61,14 +60,16 @@ export function XTimeline() {
   }, [username, theme]);
 
   return (
-    <section id="x" className={styles.section} aria-labelledby="x-title">
-      <div className={styles.container}>
-        <SectionHeading
-          eyebrow="X / Twitter"
-          title="最新のポスト。"
-          description="X アカウントから直近の投稿を埋め込みで表示します。"
-        />
+    <div className={styles.panel} aria-labelledby="latest-x-heading">
+      <div className={styles.head}>
+        <h3 id="latest-x-heading" className={styles.heading}>
+          <span className={styles.headingMark} aria-hidden="true" />
+          最新のポスト
+        </h3>
+        <p className={styles.lead}>X アカウントから直近の投稿を埋め込み表示。</p>
+      </div>
 
+      <div className={styles.body}>
         <div className={styles.frame}>
           {!mounted ? (
             <div className={styles.skeleton} aria-hidden="true" />
@@ -85,6 +86,6 @@ export function XTimeline() {
           )}
         </div>
       </div>
-    </section>
+    </div>
   );
 }

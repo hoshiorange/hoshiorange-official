@@ -16,9 +16,9 @@ export function Footer() {
         </div>
 
         <nav aria-label="フッターナビゲーション" className={styles.nav}>
+          <a href="#latest">Latest</a>
           <a href="#links">Links</a>
-          <a href="#youtube">YouTube</a>
-          <a href="#x">X</a>
+          <a href="#lab">Laboratory</a>
           <a href="#contact">Contact</a>
         </nav>
 

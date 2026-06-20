@@ -4,7 +4,7 @@
  * - 配列に追記すれば自動的にカードが増える
  */
 export type LinkCategory = 'sns' | 'creative' | 'tech' | 'other';
-export type LinkIcon = 'x' | 'youtube' | 'github' | 'note' | 'blog' | 'mail';
+export type LinkIcon = 'x' | 'youtube' | 'twitcasting' | 'github' | 'note' | 'blog' | 'mail';
 
 export interface LinkItem {
   id: string;
@@ -26,8 +26,7 @@ export const links: LinkItem[] = [
     category: 'sns',
     icon: 'x',
     description: '日々のつぶやき・告知・雑感を投下する基地。',
-    // TODO: 確定したら url を埋める
-    comingSoon: true,
+    url: 'https://x.com/hoshiorange',
   },
   {
     id: 'youtube',
@@ -35,8 +34,15 @@ export const links: LinkItem[] = [
     category: 'creative',
     icon: 'youtube',
     description: 'ゲーム実況・動画作品をアップロード予定。',
-    // TODO: 確定したら url を埋める
-    comingSoon: true,
+    url: 'https://www.youtube.com/@hoshiorange4847',
+  },
+  {
+    id: 'twitcasting',
+    label: 'ツイキャス',
+    category: 'sns',
+    icon: 'twitcasting',
+    description: 'ライブ配信プラットフォーム。気軽なリアルタイム配信の拠点。',
+    url: 'https://twitcasting.tv/hoshiorange',
   },
   {
     id: 'github',
@@ -44,8 +50,7 @@ export const links: LinkItem[] = [
     category: 'tech',
     icon: 'github',
     description: '個人開発・OSS・実験のコード置き場。',
-    // TODO: 確定したら url を埋める
-    comingSoon: true,
+    url: 'https://github.com/hoshiorange/',
   },
 ];
 
