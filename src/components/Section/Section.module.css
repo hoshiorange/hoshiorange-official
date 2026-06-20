@@ -1,0 +1,19 @@
+/* ============================================================
+   セクション共通枠
+   - 各セクション（LinkCards / LatestActivity / Laboratory / Contact）に
+     コピーされていた「1 画面分の高さ + 中央寄せ + ヘッダーオフセット」を集約。
+   - 各 module.css から `composes: sectionFrame from '...'` で取り込む。
+     composes は計算後スタイルを変えず、出力クラスが増えるだけなので見た目は不変。
+   ============================================================ */
+.sectionFrame {
+  /* 短くても 1 画面分を占有し、下端から次セクションが覗かないようにする。
+     min-height なので中身が多ければ自動で伸びる（切れない）。 */
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  /* 固定ヘッダー分のオフセット（アンカー遷移時に見出しが隠れない） */
+  scroll-margin-top: var(--header-h);
+  padding: 80px 0 120px;
+}

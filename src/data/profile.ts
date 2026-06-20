@@ -10,11 +10,6 @@ export const profile = {
   /** Hero のリード文（活動拠点であることを示す。旧 About の役割を統合） */
   heroLead:
     'ほしの活動拠点です。X や YouTube など、いろんな場所での活動をここにまとめています。',
-  /**
-   * Contact メール（未使用：現在の連絡導線は X のみ）。
-   * UI からは参照していないが、将来メール窓口を復活させる場合に備えて残置。
-   */
-  contactEmail: 'contact@hoshiorange.example',
   /** Contact 本文（仮）。各 SNS 共通ハンドルでの連絡を促す案内（シックなトーン）。 */
   contactBody:
     'X や Discord など、ユーザー名「hoshiorange」までお気軽にご連絡ください。お仕事のご依頼・コラボ・ご相談など、返信できる範囲で順次お返事します。',

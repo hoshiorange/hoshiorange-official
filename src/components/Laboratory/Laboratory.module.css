@@ -1,14 +1,6 @@
 .section {
-  /* 短くても 1 画面分を占有し、下端から次セクションが覗かないようにする。
-     min-height なので中身が多ければ自動で伸びる（切れない）。 */
-  min-height: 100vh;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  /* 固定ヘッダー分のオフセット（アンカー遷移時に見出しが隠れない） */
-  scroll-margin-top: var(--header-h);
-  padding: 80px 0 120px;
+  /* 1 画面分の高さ・中央寄せ・ヘッダーオフセットは共通枠から取り込む。 */
+  composes: sectionFrame from '@/components/Section/Section.module.css';
 }
 
 .container {

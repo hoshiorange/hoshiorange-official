@@ -1,15 +1,7 @@
 .section {
-  /* 短くても 1 画面分を占有し、下端から次セクションが覗かないようにする。
-     min-height なので中身が多ければ自動で伸びる（切れない）。 */
+  /* 1 画面分の高さ・中央寄せ・ヘッダーオフセットは共通枠から取り込む。 */
+  composes: sectionFrame from '@/components/Section/Section.module.css';
   position: relative;
-  min-height: 100vh;
-  min-height: 100svh;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  /* 固定ヘッダー分のオフセット（アンカー遷移時に見出しが隠れない） */
-  scroll-margin-top: var(--header-h);
-  padding: 80px 0 120px;
   /* 背景レイヤーの星のグロー（Bloom）がセクション外へ漏れないよう刈り取る。
      これで透過 Canvas でも“箱”の輪郭が出ず、星空に溶け込む。 */
   overflow: hidden;
@@ -137,16 +129,6 @@
 .primary:hover {
   transform: translateY(-2px);
   box-shadow: 0 18px 44px var(--accent-glow);
-}
-.divider {
-  color: var(--fg-muted);
-  font-size: 0.78rem;
-  letter-spacing: 0.2em;
-  text-transform: uppercase;
-}
-.secondary {
-  color: var(--fg-soft);
-  font-size: 0.95rem;
 }
 /* 二次的な連絡 CTA（将来の Discord 等）用のゴーストボタン。
    現状は primary（X）のみ表示のため未使用だが、配列に primary:false を足せば現れる。 */

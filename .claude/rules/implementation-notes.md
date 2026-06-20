@@ -27,8 +27,6 @@ src/
     globals.css          ← リセット + CSS 変数（:root と [data-theme='light']）
     icon.svg             ← favicon（Next.js が自動認識）
     sitemap.ts / robots.ts / opengraph-image.tsx (next/og, edge runtime)
-  app/
-    hero3d-preview/      ← 3D 案の比較プレビューページ（/hero3d-preview）
   components/
     Header/              ← ロゴ + アンカーナビ + ThemeToggle、スクロールで半透明化、モバイルメニュー
     Hero/                ← タイトル「hoshiorange-official」(シック) + リード文 + CTA(SNS=#links / 制作物=#lab) + 左右2カラム + HeroVisual(案A 3D)
@@ -39,13 +37,13 @@ src/
     XTimeline/           ← クライアントで widgets.js 動的読み込み、テーマ切替で再描画
     Contact/             ← @hoshiorange 提示（X リンク + Discord テキスト）、左右2カラム + ContactVisual(案B 3D)
     Contact/ContactVisual.tsx ← 案B（光る星）の 3D を透過配置
-    Hero3D/              ← HeroLogo3D / HeroStar3D / HeroScene3D / HeroVisual / useReducedMotion
+    Hero3D/              ← HeroLogo3D / HeroStar3D / HeroVisual / useReducedMotion（HeroScene3D は 005 で削除）
     Footer/              ← ブランド + ナビ + 著作権
     StarryBackground/    ← CSS のみで星空（3レイヤー＋流れ星＋オーロラ）
     ThemeProvider/       ← Context + themeInitScript（FOUC 防止）
     ThemeToggle/         ← MUI アイコン化、選択中表現を改善
     HoshiLogo/           ← SVG 直書き
-    Section/             ← SectionHeading（共通見出し）
+    Section/             ← SectionHeading（共通見出し）+ Section.module.css（.sectionFrame 共通枠）
   data/
     profile.ts / links.ts / labs.ts  ← 文面・リンク一覧・制作物一覧を一箇所で管理
   lib/
@@ -57,16 +55,23 @@ docs/
   002_about-into-hero.md
   003_hero-official-hub.md
   004_session-redesign.md
+  005_refactor-structure.md
 ```
 
 ## 3D / レイアウト再構成（004）
 - ページ構成を `Header → Hero → LatestActivity → LinkCards → Laboratory → Contact → Footer` に再整理。
 - React Three Fiber 基盤を導入（three / @react-three/fiber / @react-three/drei / @react-three/postprocessing / @types/three）。`useReducedMotion` で動きを抑制可能。
-- Hero に案A（ロゴ＋軌道）の `HeroVisual` を、Contact に案B（光る星）の `ContactVisual` を配置。比較用に `/hero3d-preview` ページを用意。
+- Hero に案A（ロゴ＋軌道）の `HeroVisual` を、Contact に案B（光る星）の `ContactVisual` を配置。（比較用 `/hero3d-preview` ページと統合シーン `HeroScene3D` は 005 で削除。）
 - Latest（YouTube + X）と Links を再整理し、Latest を先に。各セクションは `min-height: 100svh`。
 - LinkCards は OPEN/COMING SOON バッジを撤去し各 SNS の URL を設定。ThemeToggle は MUI アイコン化。
 - Contact はメール廃止 → `@hoshiorange`（X リンク＋ Discord テキスト）。
 - layout / sitemap / robots に SITE_URL フォールバックを追加。
+
+## 構造リファクタリング（005 / 挙動・見た目不変）
+- **デッドコード削除**: `HeroScene3D.tsx`（どこからも未参照の統合シーン）/ `src/app/hero3d-preview/`（比較用一時ページ）/ `Contact.module.css` の未使用 `.secondary`・`.divider` / `profile.ts` の未使用 `contactEmail` を削除。
+- **セクション枠の共通化**: 4 セクション（LinkCards / LatestActivity / Laboratory / Contact）にコピーされていた `.section`（min-height:100svh / flex column / justify-center / scroll-margin-top / padding）を `Section/Section.module.css` の `.sectionFrame` へ集約し、各 module から `composes: sectionFrame from '@/components/Section/Section.module.css'` で取り込む。Contact のみ position/overflow/isolation を自身に残す。`composes` は計算後スタイル不変（出力クラスが増えるだけ）なので**見た目は完全に同一**（dev で全セクションの computed style 一致を確認）。
+- **3D dynamic ラッパー統一**: `HeroVisual` の import を相対パス → `@/` エイリアスに揃え `ContactVisual` と表記統一。挙動同一。
+- 検証: `npx tsc --noEmit` / `npm run build` 成功。PC・モバイル × dark・light の全 4 パターンでリグレッション無しを確認。
 
 ## About セクション廃止（002）
 - About を独立セクションとして廃止し、その役割（「ほしの活動拠点であることを示す」）を Hero のリード文 1 文に統合した。
@@ -130,6 +135,6 @@ docs/
 ## 残課題（コンテンツ／コンフィグ系）
 - Hero / Contact の文面差し替え（コード内 `{/* TODO: 文面を差し替える */}` 参照。About は廃止済）
 - `src/data/links.ts` の URL を埋めて `comingSoon: true` を外す
-- `src/data/profile.ts` の `contactEmail` を実アドレスに
+- （メール窓口を復活させる場合は `profile.contactEmail` を再追加。005 で未使用のため削除済）
 - 環境変数を本番（Vercel）に登録：`YOUTUBE_API_KEY` / `YOUTUBE_CHANNEL_ID` / `NEXT_PUBLIC_X_USERNAME` / `NEXT_PUBLIC_SITE_URL`
 - 画像最適化したい場合は YouTube サムネを Next.js Image の最適化対象に戻す（現在 `unoptimized`）
