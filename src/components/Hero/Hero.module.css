@@ -99,14 +99,11 @@
   opacity: 0.8;
 }
 
-/* PC：アンダーラインをタイトル左端基準に、CTA を左寄せに */
+/* PC：アンダーラインをタイトル左端基準に */
 @media (min-width: 860px) {
   .title::after {
     left: 0;
     transform: none;
-  }
-  .ctas {
-    justify-content: flex-start;
   }
 }
 
@@ -119,53 +116,8 @@
   animation: fadeUp 1s ease 0.33s both;
 }
 
-.ctas {
-  display: inline-flex;
-  flex-wrap: wrap;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 4px;
-  animation: fadeUp 1s ease 0.4s both;
-}
-
-.ctaPrimary,
-.ctaGhost {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 12px 24px;
-  border-radius: 999px;
-  font-size: 0.92rem;
-  font-weight: 600;
-  letter-spacing: 0.02em;
-  transition: transform 0.25s ease, box-shadow 0.25s ease, background 0.25s ease,
-    border-color 0.25s ease, color 0.25s ease;
-}
-
-.ctaPrimary {
-  color: #0b0d1a;
-  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
-  box-shadow: 0 12px 30px var(--accent-glow);
-}
-.ctaPrimary:hover {
-  transform: translateY(-2px);
-  box-shadow: 0 18px 40px var(--accent-glow);
-}
-
-.ctaGhost {
-  color: var(--fg);
-  border: 1px solid var(--border-strong);
-  background: var(--bg-card);
-  backdrop-filter: blur(8px);
-}
-.ctaGhost:hover {
-  border-color: var(--accent);
-  color: var(--accent);
-  transform: translateY(-2px);
-}
-
 /* 統合3Dシーンのビジュアル領域
-   - 文字/CTA を主役に保ちつつ、その下に星＋ロゴ軌道を据える
+   - 文字を主役に保ちつつ、その下に星＋ロゴ軌道を据える
    - Canvas 自体がポインタ操作を拾うため pointer-events は有効
    - モバイルで大きすぎないよう clamp で高さを抑える */
 .visual {
@@ -225,7 +177,6 @@
   .atmosphere,
   .title,
   .lead,
-  .ctas,
   .visual,
   .scrollHint,
   .scrollLine {

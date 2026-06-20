@@ -8,23 +8,11 @@ export function Hero() {
       <div className={styles.atmosphere} aria-hidden="true" />
 
       <div className={styles.inner}>
-        {/* 左カラム：テキスト群（タイトル・lead・CTA）。PC では左寄せ、モバイルでは中央寄せ。 */}
+        {/* 左カラム：テキスト群（タイトル・lead）。PC では左寄せ、モバイルでは中央寄せ。 */}
         <div className={styles.copy}>
           <h1 className={styles.title}>{`${profile.handle}-official`}</h1>
 
           <p className={styles.lead}>{profile.heroLead}</p>
-
-          <div className={styles.ctas}>
-            <a href="#links" className={styles.ctaPrimary}>
-              SNS
-              <svg viewBox="0 0 24 24" width="16" height="16" aria-hidden="true">
-                <path d="M5 12h14M13 6l6 6-6 6" stroke="currentColor" strokeWidth="2" fill="none" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-            </a>
-            <a href="#lab" className={styles.ctaGhost}>
-              制作物
-            </a>
-          </div>
         </div>
 
         {/* 右カラム：サイトのロゴ（四芒星）＋オレンジ軌道リングの3D（案A）。

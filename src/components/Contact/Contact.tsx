@@ -25,7 +25,7 @@ export function Contact() {
       <div className={styles.container}>
         {/* PC: 左カード / 右星 の2カラム。モバイル: カード→星 の縦積み（grid で切替）。 */}
         <div className={styles.grid}>
-          {/* 左カラム：連絡先カード（見出し・案内・ユーザー名・X リンク） */}
+          {/* 左カラム：連絡先カード（見出し・案内・ユーザー名・X / Discord リンク） */}
           <div className={styles.card}>
             <span className={styles.aurora} aria-hidden="true" />
 
@@ -46,11 +46,11 @@ export function Contact() {
             </p>
 
             <div className={styles.actions}>
-              {profile.contactLinks.map((link) =>
-                link.href ? (
-                  // href あり：クリックできるリンク（X など）
+              {profile.contactLinks.map((link) => (
+                <div key={link.kind} className={styles.action}>
+                  {/* X＝プロフィールへ直リンク／Discord＝フレンド画面(@me)を開くだけ。
+                      UI 上はどちらも「hoshiorange で連絡できる導線」として揃える。 */}
                   <a
-                    key={link.kind}
                     className={link.primary ? styles.primary : styles.secondaryLink}
                     href={link.href}
                     target="_blank"
@@ -59,14 +59,10 @@ export function Contact() {
                     <ContactIcon kind={link.kind} />
                     {link.label}
                   </a>
-                ) : (
-                  // href なし：リンク不可なのでテキスト表示（Discord ユーザー名、コピー用に選択可）
-                  <span key={link.kind} className={styles.handleText}>
-                    <ContactIcon kind={link.kind} />
-                    {link.label}
-                  </span>
-                )
-              )}
+                  {/* Discord はワンボタン検索を避け、開いた先で自分で検索→申請する案内を添える。 */}
+                  {link.hint && <span className={styles.actionHint}>{link.hint}</span>}
+                </div>
+              ))}
             </div>
 
             <p className={styles.note}>

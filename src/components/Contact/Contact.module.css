@@ -99,13 +99,27 @@
   margin-right: 0.04em;
 }
 
+/* 連絡導線（X / Discord）を縦に積む。各項目はリンク＋任意の案内文のまとまり。 */
 .actions {
   display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: flex-start;
-  gap: 16px;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 14px;
   margin-top: 8px;
+}
+/* 1 つの連絡手段（リンク本体 ＋ Discord 等の補足案内）を縦に並べるまとまり。 */
+.action {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+}
+/* Discord の「開いたら hoshiorange を検索して申請」など、リンク下の短い案内。 */
+.actionHint {
+  padding-left: 4px;
+  color: var(--fg-muted);
+  font-size: 0.78rem;
+  line-height: 1.6;
 }
 .primary {
   display: inline-flex;
@@ -155,24 +169,8 @@
   border-color: var(--accent);
   color: var(--accent);
 }
-/* Discord など href の無い連絡手段のテキスト表示（コピー用）。
-   クリックできるボタンと区別がつくよう、枠線/塗りは控えめにし、
-   テキストとして選択しやすい（user-select 可・カーソル text）。 */
-.handleText {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  padding: 13px 22px;
-  border-radius: 999px;
-  font-weight: 600;
-  font-size: 0.92rem;
-  color: var(--fg-soft);
-  background: color-mix(in srgb, var(--fg) 6%, transparent);
-  border: 1px solid var(--border);
-  cursor: text;
-  user-select: text;
-}
-.handleText svg {
+/* セカンダリ（Discord）リンクのアイコンはアクセント色で X と並べても映えるように。 */
+.secondaryLink svg {
   color: var(--accent);
   flex: none;
 }
@@ -199,7 +197,14 @@
     font-size: clamp(1.5rem, 7vw, 2.4rem);
   }
   .actions {
-    justify-content: center;
+    align-items: center;
+  }
+  .action {
+    align-items: center;
+  }
+  .actionHint {
+    padding-left: 0;
+    text-align: center;
   }
   /* 星は縦積みの下側で控えめなサイズに。レイアウトを押し広げない。 */
   .visual {

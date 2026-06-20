@@ -26,10 +26,11 @@ export const profile = {
   contactHandle: 'hoshiorange',
   /**
    * 各 SNS の連絡導線。共通ハンドル「hoshiorange」で連絡してもらう想定。
-   * - href あり … クリックできるリンクとして表示（X など）
-   * - href なし … リンク不可なのでコピーしやすいテキストで表示（Discord はユーザー名のみ）
+   * - X … プロフィールへ直リンク（クリックで本人ページが開く）
+   * - Discord … フレンド/DM 画面（@me）を開くだけのリンク。特定プロフィールには飛ばさない
+   *   （ワンボタンで本人検索されるのを避けるため）。開いた先で自分で「hoshiorange」を
+   *   検索 → 友達申請する流れ。hint にその案内を添える。
    * primary はリンク項目の中で 1 つだけ強調する CTA フラグ。
-   * 将来 Discord の招待 URL 等が用意できたら href を足すだけでリンク化できる。
    */
   contactLinks: [
     {
@@ -40,14 +41,18 @@ export const profile = {
     },
     {
       kind: 'Discord',
-      // href 無し：Discord ユーザー名は URL 直リンク不可のためテキスト表示（コピー用）
-      label: 'Discord: hoshiorange',
+      // フレンド/DM 画面を開くだけ（特定プロフィールへは飛ばさない）。
+      label: 'Discord でフレンド申請',
+      href: 'https://discord.com/channels/@me',
+      // 開いた先で「hoshiorange」を検索して申請してもらうための短い案内。
+      hint: '開いたら「hoshiorange」を検索して友達申請してください。',
     },
   ] as ReadonlyArray<{
     kind: 'X' | 'Discord';
     label: string;
     href?: string;
     primary?: boolean;
+    hint?: string;
   }>,
   /** 著作権表記 */
   copyright: '© hoshiorange',
