@@ -1,0 +1,287 @@
+.wrap {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  overflow: hidden;
+  pointer-events: none;
+  background: var(--bg);
+  transition: background 0.6s ease;
+}
+
+.aurora {
+  position: absolute;
+  inset: -10%;
+  background:
+    radial-gradient(ellipse at 15% 10%, var(--aurora-1), transparent 55%),
+    radial-gradient(ellipse at 85% 25%, var(--aurora-2), transparent 50%),
+    radial-gradient(ellipse at 50% 95%, var(--aurora-3), transparent 60%);
+  filter: blur(20px);
+  opacity: 0.95;
+  animation: auroraShift 20s ease-in-out infinite alternate;
+}
+
+@keyframes auroraShift {
+  from { transform: translate3d(0, 0, 0) scale(1); }
+  to { transform: translate3d(-2%, 2%, 0) scale(1.05); }
+}
+
+/* ===== 星ドット（box-shadow 散布） ===== */
+.stars {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 1px;
+  height: 1px;
+  border-radius: 50%;
+  background: transparent;
+  /* 個別レイヤーで box-shadow を上書き */
+}
+
+.layerSmall {
+  /* 小さい星をたくさん（80個） */
+  box-shadow:
+    23vw 12vh 0 0.5px var(--star-dim),
+    71vw 8vh 0 0.5px var(--star-dim),
+    13vw 41vh 0 0.5px var(--star-dim),
+    83vw 22vh 0 0.5px var(--star-dim),
+    42vw 71vh 0 0.5px var(--star-dim),
+    91vw 64vh 0 0.5px var(--star-dim),
+    7vw 88vh 0 0.5px var(--star-dim),
+    35vw 19vh 0 0.5px var(--star-dim),
+    62vw 47vh 0 0.5px var(--star-dim),
+    18vw 73vh 0 0.5px var(--star-dim),
+    54vw 11vh 0 0.5px var(--star-dim),
+    79vw 39vh 0 0.5px var(--star-dim),
+    27vw 56vh 0 0.5px var(--star-dim),
+    66vw 84vh 0 0.5px var(--star-dim),
+    9vw 27vh 0 0.5px var(--star-dim),
+    48vw 33vh 0 0.5px var(--star-dim),
+    87vw 78vh 0 0.5px var(--star-dim),
+    31vw 92vh 0 0.5px var(--star-dim),
+    74vw 53vh 0 0.5px var(--star-dim),
+    4vw 62vh 0 0.5px var(--star-dim),
+    58vw 25vh 0 0.5px var(--star-dim),
+    21vw 81vh 0 0.5px var(--star-dim),
+    93vw 44vh 0 0.5px var(--star-dim),
+    38vw 6vh 0 0.5px var(--star-dim),
+    69vw 67vh 0 0.5px var(--star-dim),
+    12vw 53vh 0 0.5px var(--star-dim),
+    46vw 86vh 0 0.5px var(--star-dim),
+    81vw 14vh 0 0.5px var(--star-dim),
+    29vw 38vh 0 0.5px var(--star-dim),
+    63vw 76vh 0 0.5px var(--star-dim),
+    16vw 17vh 0 0.5px var(--star-dim),
+    52vw 59vh 0 0.5px var(--star-dim),
+    85vw 31vh 0 0.5px var(--star-dim),
+    40vw 95vh 0 0.5px var(--star-dim),
+    76vw 21vh 0 0.5px var(--star-dim),
+    2vw 49vh 0 0.5px var(--star-dim),
+    56vw 89vh 0 0.5px var(--star-dim),
+    24vw 4vh 0 0.5px var(--star-dim),
+    89vw 56vh 0 0.5px var(--star-dim),
+    33vw 65vh 0 0.5px var(--star-dim),
+    61vw 18vh 0 0.5px var(--star-dim),
+    19vw 36vh 0 0.5px var(--star-dim),
+    44vw 50vh 0 0.5px var(--star-dim),
+    72vw 91vh 0 0.5px var(--star-dim),
+    6vw 73vh 0 0.5px var(--star-dim),
+    50vw 16vh 0 0.5px var(--star-dim),
+    82vw 60vh 0 0.5px var(--star-dim),
+    11vw 9vh 0 0.5px var(--star-dim),
+    37vw 80vh 0 0.5px var(--star-dim),
+    65vw 35vh 0 0.5px var(--star-dim),
+    26vw 26vh 0 0.5px var(--star-dim),
+    95vw 87vh 0 0.5px var(--star-dim),
+    14vw 64vh 0 0.5px var(--star-dim),
+    59vw 43vh 0 0.5px var(--star-dim),
+    77vw 5vh 0 0.5px var(--star-dim),
+    41vw 22vh 0 0.5px var(--star-dim),
+    8vw 99vh 0 0.5px var(--star-dim),
+    68vw 70vh 0 0.5px var(--star-dim),
+    30vw 47vh 0 0.5px var(--star-dim),
+    90vw 13vh 0 0.5px var(--star-dim),
+    49vw 78vh 0 0.5px var(--star-dim),
+    20vw 23vh 0 0.5px var(--star-dim),
+    73vw 58vh 0 0.5px var(--star-dim),
+    36vw 96vh 0 0.5px var(--star-dim),
+    55vw 40vh 0 0.5px var(--star-dim),
+    17vw 84vh 0 0.5px var(--star-dim),
+    86vw 49vh 0 0.5px var(--star-dim),
+    45vw 1vh 0 0.5px var(--star-dim),
+    64vw 29vh 0 0.5px var(--star-dim),
+    10vw 79vh 0 0.5px var(--star-dim),
+    78vw 67vh 0 0.5px var(--star-dim),
+    32vw 52vh 0 0.5px var(--star-dim),
+    97vw 38vh 0 0.5px var(--star-dim),
+    25vw 69vh 0 0.5px var(--star-dim),
+    57vw 8vh 0 0.5px var(--star-dim),
+    88vw 95vh 0 0.5px var(--star-dim),
+    39vw 31vh 0 0.5px var(--star-dim),
+    70vw 60vh 0 0.5px var(--star-dim),
+    15vw 90vh 0 0.5px var(--star-dim),
+    51vw 75vh 0 0.5px var(--star-dim),
+    80vw 47vh 0 0.5px var(--star-dim),
+    1vw 35vh 0 0.5px var(--star-dim);
+  animation: drift 240s linear infinite;
+}
+
+.layerMedium {
+  width: 1.6px;
+  height: 1.6px;
+  /* 中サイズ（60個） */
+  box-shadow:
+    13vw 18vh 0 0.4px var(--star),
+    66vw 5vh 0 0.4px var(--star),
+    27vw 51vh 0 0.4px var(--star),
+    84vw 33vh 0 0.4px var(--star),
+    49vw 79vh 0 0.4px var(--star),
+    8vw 67vh 0 0.4px var(--star),
+    75vw 88vh 0 0.4px var(--star),
+    36vw 9vh 0 0.4px var(--star),
+    58vw 41vh 0 0.4px var(--star),
+    21vw 73vh 0 0.4px var(--star),
+    91vw 16vh 0 0.4px var(--star),
+    45vw 60vh 0 0.4px var(--star),
+    3vw 28vh 0 0.4px var(--star),
+    62vw 92vh 0 0.4px var(--star),
+    30vw 39vh 0 0.4px var(--star),
+    79vw 54vh 0 0.4px var(--star),
+    17vw 4vh 0 0.4px var(--star),
+    52vw 23vh 0 0.4px var(--star),
+    87vw 77vh 0 0.4px var(--star),
+    41vw 84vh 0 0.4px var(--star),
+    9vw 46vh 0 0.4px var(--star),
+    73vw 31vh 0 0.4px var(--star),
+    25vw 13vh 0 0.4px var(--star),
+    68vw 70vh 0 0.4px var(--star),
+    34vw 95vh 0 0.4px var(--star),
+    93vw 50vh 0 0.4px var(--star),
+    47vw 6vh 0 0.4px var(--star),
+    11vw 81vh 0 0.4px var(--star),
+    60vw 26vh 0 0.4px var(--star),
+    19vw 58vh 0 0.4px var(--star),
+    82vw 64vh 0 0.4px var(--star),
+    38vw 17vh 0 0.4px var(--star),
+    71vw 43vh 0 0.4px var(--star),
+    5vw 89vh 0 0.4px var(--star),
+    55vw 71vh 0 0.4px var(--star),
+    96vw 22vh 0 0.4px var(--star),
+    28vw 36vh 0 0.4px var(--star),
+    64vw 55vh 0 0.4px var(--star),
+    15vw 95vh 0 0.4px var(--star),
+    77vw 11vh 0 0.4px var(--star),
+    42vw 48vh 0 0.4px var(--star),
+    7vw 24vh 0 0.4px var(--star),
+    89vw 86vh 0 0.4px var(--star),
+    32vw 65vh 0 0.4px var(--star),
+    51vw 30vh 0 0.4px var(--star),
+    22vw 90vh 0 0.4px var(--star),
+    85vw 42vh 0 0.4px var(--star),
+    46vw 14vh 0 0.4px var(--star),
+    1vw 56vh 0 0.4px var(--star),
+    69vw 76vh 0 0.4px var(--star),
+    37vw 28vh 0 0.4px var(--star),
+    78vw 67vh 0 0.4px var(--star),
+    23vw 7vh 0 0.4px var(--star),
+    98vw 35vh 0 0.4px var(--star),
+    54vw 53vh 0 0.4px var(--star),
+    14vw 85vh 0 0.4px var(--star),
+    61vw 19vh 0 0.4px var(--star),
+    44vw 92vh 0 0.4px var(--star),
+    83vw 39vh 0 0.4px var(--star),
+    29vw 62vh 0 0.4px var(--star);
+  animation: drift 180s linear infinite, twinkle 5s ease-in-out infinite;
+}
+
+.layerLarge {
+  width: 2.2px;
+  height: 2.2px;
+  /* 大きく光る星（30個） */
+  box-shadow:
+    18vw 22vh 0 0.4px var(--star),
+    72vw 11vh 0 0.4px var(--star),
+    34vw 67vh 0 0.4px var(--star),
+    61vw 38vh 0 0.4px var(--star),
+    9vw 85vh 0 0.4px var(--star),
+    89vw 50vh 0 0.4px var(--star),
+    44vw 17vh 0 0.4px var(--star),
+    27vw 92vh 0 0.4px var(--star),
+    79vw 73vh 0 0.4px var(--star),
+    12vw 43vh 0 0.4px var(--star),
+    55vw 62vh 0 0.4px var(--star),
+    93vw 28vh 0 0.4px var(--star),
+    38vw 79vh 0 0.4px var(--star),
+    66vw 5vh 0 0.4px var(--star),
+    21vw 33vh 0 0.4px var(--star),
+    85vw 87vh 0 0.4px var(--star),
+    47vw 46vh 0 0.4px var(--star),
+    3vw 14vh 0 0.4px var(--star),
+    75vw 60vh 0 0.4px var(--star),
+    31vw 24vh 0 0.4px var(--star),
+    58vw 88vh 0 0.4px var(--star),
+    98vw 65vh 0 0.4px var(--star),
+    15vw 75vh 0 0.4px var(--star),
+    69vw 19vh 0 0.4px var(--star),
+    41vw 51vh 0 0.4px var(--star),
+    25vw 8vh 0 0.4px var(--star),
+    82vw 95vh 0 0.4px var(--star),
+    52vw 31vh 0 0.4px var(--star),
+    7vw 56vh 0 0.4px var(--star),
+    63vw 82vh 0 0.4px var(--star);
+  animation: drift 360s linear infinite reverse, twinkle 4s ease-in-out infinite;
+}
+
+@keyframes drift {
+  from { transform: translate3d(0, 0, 0); }
+  to { transform: translate3d(-3vw, -2vh, 0); }
+}
+
+@keyframes twinkle {
+  0%, 100% { opacity: 0.95; }
+  50% { opacity: 0.4; }
+}
+
+/* ===== 流れ星 ===== */
+.shootingStar {
+  position: absolute;
+  top: 12%;
+  left: 90%;
+  width: 120px;
+  height: 1.5px;
+  background: linear-gradient(90deg, var(--star) 0%, var(--star-dim) 30%, transparent 100%);
+  border-radius: 999px;
+  filter: drop-shadow(0 0 6px var(--star));
+  transform: rotate(20deg);
+  opacity: 0;
+  animation: shoot 9s linear infinite;
+  animation-delay: 3s;
+}
+
+.shootingStar2 {
+  top: 38%;
+  left: 100%;
+  width: 90px;
+  transform: rotate(15deg);
+  animation-duration: 13s;
+  animation-delay: 7s;
+}
+
+@keyframes shoot {
+  0% { opacity: 0; transform: translate(0, 0) rotate(20deg); }
+  5% { opacity: 1; }
+  35% { opacity: 1; }
+  60%, 100% {
+    opacity: 0;
+    transform: translate(-110vw, 40vh) rotate(20deg);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .layerSmall,
+  .layerMedium,
+  .layerLarge,
+  .aurora,
+  .shootingStar {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,197 @@
+.section {
+  /* 1 画面分の高さ・中央寄せ・ヘッダーオフセットは共通枠から取り込む。 */
+  composes: sectionFrame from '@/components/Section/Section.module.css';
+}
+
+.container {
+  width: min(1120px, calc(100% - 2.5rem));
+  margin-inline: auto;
+}
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+  gap: 20px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  padding: 26px 24px 24px;
+  border-radius: 22px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(10px);
+  overflow: hidden;
+  isolation: isolate;
+  min-height: 220px;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease,
+    box-shadow 0.3s ease, background 0.3s ease;
+}
+
+.card:not(.coming) {
+  cursor: pointer;
+}
+.card:not(.coming):hover {
+  transform: translateY(-6px) rotate(-0.4deg);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-card), var(--shadow-glow);
+  background: var(--bg-card-hover);
+}
+.card:not(.coming):hover .arrow {
+  transform: translate(4px, -4px);
+  color: var(--accent);
+}
+.card:not(.coming):hover .glow {
+  opacity: 1;
+}
+
+.glow {
+  position: absolute;
+  top: -40%;
+  right: -30%;
+  width: 80%;
+  height: 80%;
+  background: radial-gradient(circle, var(--accent-glow), transparent 65%);
+  filter: blur(40px);
+  opacity: 0.35;
+  z-index: -1;
+  transition: opacity 0.4s ease, transform 0.6s ease;
+}
+
+.cardHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+}
+
+.iconWrap {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 14px;
+  background: linear-gradient(135deg, color-mix(in srgb, var(--accent) 30%, transparent), transparent 70%);
+  border: 1px solid var(--border);
+  color: var(--fg);
+  transition: color 0.3s ease, transform 0.3s ease;
+}
+
+.card:not(.coming):hover .iconWrap {
+  color: var(--accent);
+  transform: rotate(-6deg);
+}
+
+.tagOpen,
+.tagSoon {
+  font-size: 0.66rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  padding: 4px 10px;
+  border-radius: 999px;
+  font-weight: 600;
+}
+.tagOpen {
+  color: var(--accent);
+  background: color-mix(in srgb, var(--accent) 14%, transparent);
+  border: 1px solid color-mix(in srgb, var(--accent) 35%, transparent);
+}
+.tagSoon {
+  color: var(--fg-muted);
+  background: var(--bg-elevated);
+  border: 1px dashed var(--border-strong);
+}
+
+.cardTitle {
+  font-size: 1.18rem;
+  font-weight: 700;
+  letter-spacing: -0.005em;
+}
+
+.cardDesc {
+  font-size: 0.88rem;
+  color: var(--fg-muted);
+  line-height: 1.7;
+}
+
+.tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  list-style: none;
+  padding: 0;
+  margin: 2px 0 0;
+}
+
+.tag {
+  font-size: 0.72rem;
+  letter-spacing: 0.02em;
+  color: var(--fg-muted);
+  padding: 3px 10px;
+  border-radius: 999px;
+  background: var(--bg-elevated);
+  border: 1px solid var(--border);
+}
+
+.arrow {
+  position: absolute;
+  right: 22px;
+  bottom: 22px;
+  display: inline-flex;
+  width: 36px;
+  height: 36px;
+  align-items: center;
+  justify-content: center;
+  color: var(--fg-muted);
+  border-radius: 12px;
+  border: 1px solid var(--border);
+  transition: transform 0.3s ease, color 0.3s ease, border-color 0.3s ease;
+}
+
+.coming {
+  opacity: 0.72;
+  cursor: default;
+}
+
+.coming::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    135deg,
+    transparent 0,
+    transparent 10px,
+    color-mix(in srgb, var(--fg) 4%, transparent) 10px,
+    color-mix(in srgb, var(--fg) 4%, transparent) 11px
+  );
+  pointer-events: none;
+}
+
+.coming .arrow {
+  display: none;
+}
+
+/* カテゴリ別の差し色 */
+.category_service .iconWrap { background: linear-gradient(135deg, rgba(120, 200, 255, 0.25), transparent 70%); }
+.category_site .iconWrap { background: linear-gradient(135deg, rgba(255, 140, 42, 0.3), transparent 70%); }
+.category_game .iconWrap { background: linear-gradient(135deg, rgba(180, 160, 255, 0.25), transparent 70%); }
+.category_community .iconWrap { background: linear-gradient(135deg, rgba(120, 255, 200, 0.22), transparent 70%); }
+
+@media (prefers-reduced-motion: reduce) {
+  .card,
+  .glow,
+  .iconWrap,
+  .arrow {
+    transition: none;
+  }
+  .card:not(.coming):hover {
+    transform: none;
+  }
+}

@@ -1,0 +1,185 @@
+.hero {
+  position: relative;
+  min-height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 120px 0 80px;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.atmosphere {
+  position: absolute;
+  inset: -10%;
+  background: var(--hero-gradient);
+  filter: blur(40px);
+  opacity: 0.85;
+  z-index: -1;
+  animation: breathe 12s ease-in-out infinite alternate;
+}
+
+@keyframes breathe {
+  from { transform: scale(1); opacity: 0.85; }
+  to { transform: scale(1.08); opacity: 1; }
+}
+
+.inner {
+  position: relative;
+  z-index: 1;
+  width: min(1120px, calc(100% - 2.5rem));
+  margin-inline: auto;
+  /* モバイル基準：縦積み・中央寄せ */
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  gap: 28px;
+}
+
+/* 左カラム：テキスト群 */
+.copy {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 28px;
+}
+
+/* PC（広い画面）：左テキスト・右3D の2カラム */
+@media (min-width: 860px) {
+  .inner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    text-align: left;
+    gap: clamp(32px, 5vw, 72px);
+  }
+
+  .copy {
+    align-items: flex-start;
+    flex: 1 1 0;
+    min-width: 0;
+  }
+
+  .visual {
+    flex: 0 0 auto;
+  }
+}
+
+.title {
+  position: relative;
+  display: inline-block;
+  max-width: 100%;
+  /* 1 語で長くなるので vw 主体で縮め、はみ出し時は折り返す */
+  font-size: clamp(1.9rem, 6.2vw, 4.2rem);
+  line-height: 1.1;
+  padding-bottom: 0.2em;
+  font-weight: 500;
+  letter-spacing: 0.04em;
+  color: var(--fg);
+  overflow-wrap: break-word;
+  animation: fadeUp 1s ease 0.1s both;
+}
+
+/* 控えめな差し色：細い静かなアンダーライン（グローなし） */
+.title::after {
+  content: '';
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  bottom: 0;
+  width: 2.6em;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    transparent,
+    color-mix(in srgb, var(--accent) 70%, transparent),
+    transparent
+  );
+  opacity: 0.8;
+}
+
+/* PC：アンダーラインをタイトル左端基準に */
+@media (min-width: 860px) {
+  .title::after {
+    left: 0;
+    transform: none;
+  }
+}
+
+.lead {
+  max-width: 540px;
+  margin-top: -10px;
+  font-size: clamp(0.84rem, 1.4vw, 0.96rem);
+  color: var(--fg-muted);
+  line-height: 1.85;
+  animation: fadeUp 1s ease 0.33s both;
+}
+
+/* 統合3Dシーンのビジュアル領域
+   - 文字を主役に保ちつつ、その下に星＋ロゴ軌道を据える
+   - Canvas 自体がポインタ操作を拾うため pointer-events は有効
+   - モバイルで大きすぎないよう clamp で高さを抑える */
+.visual {
+  position: relative;
+  margin-top: 8px;
+  width: min(560px, 92vw);
+  height: clamp(260px, 42vh, 440px);
+  touch-action: none; /* ドラッグ回転中の画面スクロール暴発を防ぐ */
+  animation: fadeUp 1.2s ease 0.5s both;
+}
+.visual canvas {
+  display: block;
+}
+
+/* PC：右カラムで映えるサイズ。左カラムを圧迫しすぎない幅に抑える */
+@media (min-width: 860px) {
+  .visual {
+    margin-top: 0;
+    width: clamp(360px, 42vw, 520px);
+    height: clamp(360px, 50vh, 520px);
+  }
+}
+
+.scrollHint {
+  position: absolute;
+  left: 50%;
+  bottom: 32px;
+  transform: translateX(-50%);
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  font-size: 0.66rem;
+  letter-spacing: 0.3em;
+  color: var(--fg-muted);
+  text-transform: uppercase;
+  animation: fadeUp 1.4s ease 0.7s both;
+}
+.scrollLine {
+  width: 1px;
+  height: 40px;
+  background: linear-gradient(180deg, var(--accent), transparent);
+  animation: scrollDown 2.2s ease-in-out infinite;
+}
+@keyframes scrollDown {
+  0% { transform: scaleY(0); transform-origin: top; opacity: 0.8; }
+  60% { transform: scaleY(1); opacity: 1; }
+  100% { transform: scaleY(1); transform-origin: bottom; opacity: 0; }
+}
+
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .atmosphere,
+  .title,
+  .lead,
+  .visual,
+  .scrollHint,
+  .scrollLine {
+    animation: none !important;
+  }
+}

@@ -1,0 +1,101 @@
+# 003 Hero を「Official Hub」構成へ作り変え（案B：日本語併記・表示名主役）
+
+## 背景
+Hero のポエム調キャッチコピー（「夜空に届け、ほしのつぶやき。」）と星比喩のサブコピー
+（「ゲーム、創作、コード。三つの軌道…」）が、リンクハブ／活動拠点という方針と不整合だった。
+ユーザー確定の **案B** に従い、表示名「ほし」を主役にした見出しへ差し替える。
+
+## 実施プラン
+- [x] `src/components/Hero/Hero.tsx`：h1 のポエム2行を削除し、案B の見出し（大「ほし」＋小「hoshiorange — Official Hub」）へ差し替え
+- [x] subTagline を表示している `<p class="sub">` を要素ごと削除
+- [x] badge "Official Hub" は維持、lead（heroLead）は維持
+- [x] `src/components/Hero/Hero.module.css`：見出しの大小2段組みスタイルへ調整（`.titleName` / `.titleSub` / `.titleDash` 追加、旧 `.titleLine1/2` `.titleAccent` `.sub` を整理）
+- [x] 流体タイポ（clamp）と `prefers-reduced-motion: reduce` の整合を維持（`.sub` を停止リストから除去）
+- [x] `src/data/profile.ts`：`tagline` / `subTagline` の他箇所参照を grep で確認 → 参照なしを確認のうえ両フィールド削除
+- [x] `npm run build` 成功・型エラー/未使用 import なしを確認
+- [x] 本ドキュメント作成＋ implementation-notes.md 更新
+
+## tagline / subTagline 参照調査結果
+`src` 配下の `.ts/.tsx` を grep で確認。
+
+| フィールド | コード参照 | metadata/OGP/layout/sitemap |
+|---|---|---|
+| `tagline` | なし（どこからも未参照） | なし |
+| `subTagline` | `Hero.tsx` の1箇所のみ（今回削除） | なし |
+
+- metadata（`layout.tsx` の title/description）、`opengraph-image.tsx`、`sitemap.ts`、`robots.ts` いずれも
+  両フィールドを参照していないことを確認。
+- 残るヒットはドキュメント／ルールメモ（`docs/002...`、`.claude/rules/*.md`）のみで、実コードへの影響なし。
+- 以上より両フィールドを安全に削除した（title/description を空にするような副作用なし）。
+
+## 変更ファイルと要点
+- `src/components/Hero/Hero.tsx`
+  - h1 を `<span class="titleName">{profile.displayName}</span>`（大「ほし」）＋
+    `<span class="titleSub">{profile.handle} — Official Hub</span>`（小英字行）へ差し替え。
+  - subTagline の `<p class="sub">` を削除。badge と lead は維持。データ駆動（displayName / handle）を活用。
+- `src/components/Hero/Hero.module.css`
+  - `.title` を縦フレックスの2段組みコンテナに変更。
+  - `.titleName`：`clamp(3.2rem, 11vw, 7rem)` の大見出し。旧 `.titleAccent` のオレンジグラデ＋下線グロウを継承。
+  - `.titleSub`：`clamp(0.78rem, 2.2vw, 1.15rem)` の英字サブラベル（uppercase / letter-spacing）。
+  - `.titleDash`：em ダッシュをアクセント色に。
+  - 旧 `.titleLine1` `.titleLine2` `.titleAccent` `.sub` を削除。`prefers-reduced-motion` 停止リストから `.sub` を除去。
+- `src/data/profile.ts`
+  - `tagline` / `subTagline` を削除。`handle` のコメントを「Hero 見出しのサブラベル等で使用」に更新。
+
+## 完了報告
+- 案B 構成へ差し替え完了。h1 は「大きな『ほし』（オレンジグラデ＋下線グロウ）」＋
+  その下に小さく「hoshiorange — Official Hub」を表示。badge "Official Hub" と heroLead は従来どおり。
+- `tagline` / `subTagline` はコード・metadata 全体で未使用（subTagline は Hero の1箇所のみ）と確認し、安全に削除。
+- `npm run build` 成功。型エラー・未使用 import なし。
+- 流体タイポ（clamp）・`prefers-reduced-motion` 停止の整合を維持。
+
+## 追記：微修正（大「ほし」を削除し hoshiorange を主役へ）
+ユーザー指示により、h1 の大きな「ほし」(`titleName` = `displayName`) は不要となったため削除。
+「hoshiorange」(`profile.handle`) を主役の大見出しにする（旧・案A 寄りの構成）。
+
+### "Official Hub" 重複の解消方針
+従来は badge と h1 サブラベルの両方に "Official Hub" があり重複していた。
+**badge "Official Hub" を残し、h1 サブラベル（`.titleSub` / `.titleDash` の "hoshiorange — Official Hub" 行）を撤去**して解消。
+"ほし" を消すとサブラベルのダッシュ装飾も不自然になるため、h1 は **「hoshiorange」単独**のクリーンな構成にした。
+誰のサイトかは heroLead（「ほしの活動拠点です…」）で引き続き伝わる。
+
+### 変更ファイルと要点（追記分）
+- `src/components/Hero/Hero.tsx`
+  - h1 の中身を `<span class="titleName">{profile.handle}</span>` のみに変更（大「ほし」=`displayName` と `titleSub`/`titleDash` を削除）。
+  - badge・lead・CTA・ロゴは従来どおり。`profile` は `handle` / `heroLead` で引き続き使用。
+- `src/components/Hero/Hero.module.css`
+  - `.titleSub` / `.titleDash` を削除。`.title` の `gap: 0.35em`（2段組み用）を撤去。
+  - `.titleName` を英字 1 単語「hoshiorange」向けに調整：`font-size` を `clamp(3.2rem, 11vw, 7rem)` → `clamp(2.8rem, 9vw, 6rem)`、`letter-spacing: -0.01em` を追加（長い英字でのはみ出し抑制）。オレンジグラデ＋下線グロウは維持。
+  - `prefers-reduced-motion` 停止リストはそのまま整合（削除クラスは元々非対象）。
+
+### 完了報告（追記分）
+- h1 は「**hoshiorange**（オレンジグラデ＋下線グロウ）」単独の大見出しに。"Official Hub" は上部 badge のみが担当し重複解消。heroLead は維持。
+- `npm run build` 成功・型エラー/未使用 import なし。
+
+## 追記2：見出しを「hoshiorange official」へ＋シック化
+ユーザー指示により (1) 見出し文言を「**hoshiorange official**」に、(2) フォントの主張を控えめ・シックな高級感へ調整。
+
+### バッジ "Official Hub" の処理
+h1 に "official" が入ると上部 badge "Official Hub" と意味が重複しうるさいため、**badge（`.badge` / `.dot` / `pulse`）を完全撤去**。h1 自身が役割（公式ハブであること）を担う構成へ一本化した。
+
+### シック化の方針と具体変更
+- **色**：`.titleName` のオレンジ全面グラデ（`linear-gradient` + `background-clip: text`）を廃止し、**白〜オフホワイト基調 `color: var(--fg)`** に。オレンジは差し色のみ＝下線の極細ラインに `color-mix(var(--accent) 70%)` で薄く残す。
+- **グロー**：旧 `::after` の `filter: blur(8px)` のぼかし発光（`height: 0.12em`）を**廃止**。代わりに `height: 1px` の静かな極細アンダーライン（中央 2.2em 幅・グローなし・opacity 0.8）に置換。
+- **ウェイト**：`.title` を `font-weight: 700` → `400`、`.titleName` を `500` に。重さを抑え端正に。
+- **字間**：`.titleName` に `letter-spacing: 0.04em`（旧 `-0.01em` の詰めから開きへ）。`.titleOfficial` は `0.42em` の広い字間 + uppercase で静かなラベル感。
+- **サイズ**：`.titleName` を `clamp(2.8rem, 9vw, 6rem)` → `clamp(2.4rem, 7.5vw, 5rem)` に縮小し余白で落ち着きを出す。
+- **文言構成**：h1 を `hoshiorange`（`.titleName`）＋ `official`（`.titleOfficial`、小・細・字間広）の2要素に。official は handle 下に小さく従属配置。
+
+### 変更ファイルと要点（追記2分）
+- `src/components/Hero/Hero.tsx`
+  - badge ブロック（`.badge` / `.dot` / "Official Hub"）を削除。
+  - h1 を `<span class="titleName">{profile.handle}</span>` + `<span class="titleOfficial">official</span>` の2段構成に。
+- `src/components/Hero/Hero.module.css`
+  - `.badge` / `.dot` / `@keyframes pulse` を削除。
+  - `.title` のウェイト・gap 調整。`.titleName` を白基調・細め・字間広め・サイズ縮小に作り替え、`::after` を極細静ラインへ。`.titleOfficial` を新規追加。
+  - `prefers-reduced-motion` 停止リストから `.badge` / `.dot` を除去（削除済みクラスのため）。`.title` 等は維持。
+
+### 完了報告（追記2分）
+- 見出しは「**hoshiorange**（白〜オフホワイト・細め・字間広め・中央に極細オレンジ下線）」＋ その下に小さく「**official**」（字間を広げた静かな小文字ラベル）。派手なオレンジ塗り・ぼかし発光を排し、余白と細字で上品・シックな印象に。badge は撤去し重複解消。
+- ダーク／ライトとも `var(--fg)` / `var(--accent)` / `var(--fg-muted)` で配色し両テーマ整合。
+- `npm run build` 成功・型エラー/未使用 import なし。実際の色味最終判断は dev でユーザーが確認予定。

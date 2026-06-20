@@ -1,0 +1,22 @@
+.section {
+  /* 1 画面分の高さ・中央寄せ・ヘッダーオフセットは共通枠から取り込む。 */
+  composes: sectionFrame from '@/components/Section/Section.module.css';
+}
+.container {
+  width: min(1180px, calc(100% - 2.5rem));
+  margin-inline: auto;
+}
+
+/* PC: 左に YouTube（可変・主役）/ 右に X タイムライン（固定幅寄り） */
+.grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr);
+  gap: 28px;
+  align-items: start;
+}
+@media (min-width: 960px) {
+  .grid {
+    grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr);
+    gap: 32px;
+  }
+}
