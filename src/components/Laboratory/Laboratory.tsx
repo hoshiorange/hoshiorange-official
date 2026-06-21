@@ -1,5 +1,6 @@
+import Link from 'next/link';
 import { SectionHeading } from '@/components/Section/SectionHeading';
-import { labs, type LabItem } from '@/data/labs';
+import { labs, isInternalUrl, type LabItem } from '@/data/labs';
 import styles from './Laboratory.module.css';
 
 // 制作物（サービス・サイト・ゲーム・コミュニティ等）を紹介するセクション。
@@ -110,6 +111,16 @@ function Card({ item }: { item: LabItem }) {
     );
   }
 
+  // サイト内ページ（`/lab/...` 等）は next/link で同一タブ遷移。
+  if (isInternalUrl(item.url)) {
+    return (
+      <Link className={className} href={item.url as string}>
+        {content}
+      </Link>
+    );
+  }
+
+  // 外部 URL は従来どおり別タブで開く。
   return (
     <a className={className} href={item.url} target="_blank" rel="noopener noreferrer">
       {content}

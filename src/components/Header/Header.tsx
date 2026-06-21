@@ -9,8 +9,8 @@ import styles from './Header.module.css';
 
 const nav = [
   { href: '#links', label: 'Links' },
-  { href: '#latest', label: 'Streaming' },
   { href: '#lab', label: 'Laboratory' },
+  { href: '#latest', label: 'Streaming' },
   { href: '#contact', label: 'Contact' },
 ];
 

@@ -1,0 +1,149 @@
+/* ============================================================
+   /lab/koori-no-nukemichi — Coming Soon ページ
+   - 星空背景は layout の StarryBackground が全画面に出る前提。
+     その上に読みやすいカードを 1 枚置くシックな構成。
+   - ダーク/ライト両対応・レスポンシブ・reduced-motion 整合。
+   ============================================================ */
+.page {
+  position: relative;
+  min-height: 100vh;
+  min-height: 100svh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 80px 20px;
+}
+
+.card {
+  position: relative;
+  width: min(620px, 100%);
+  padding: clamp(40px, 6vw, 64px) clamp(28px, 5vw, 56px);
+  border-radius: 28px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  backdrop-filter: blur(16px);
+  box-shadow: var(--shadow-card);
+  text-align: center;
+  overflow: hidden;
+  isolation: isolate;
+}
+
+.aurora {
+  position: absolute;
+  inset: -40% -20%;
+  background:
+    radial-gradient(circle at 25% 20%, color-mix(in srgb, var(--aurora-1) 80%, transparent), transparent 55%),
+    radial-gradient(circle at 80% 80%, var(--accent-glow), transparent 55%);
+  filter: blur(48px);
+  opacity: 0.65;
+  z-index: -1;
+  animation: drift 16s ease-in-out infinite alternate;
+}
+@keyframes drift {
+  from { transform: scale(1) translate3d(0, 0, 0); }
+  to { transform: scale(1.12) translate3d(-2%, 2%, 0); }
+}
+
+.eyebrow {
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-size: 0.74rem;
+  letter-spacing: 0.22em;
+  text-transform: uppercase;
+  color: var(--accent);
+  margin-bottom: 14px;
+}
+
+.title {
+  font-size: clamp(1.9rem, 6vw, 3rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+  color: var(--fg);
+}
+
+.badge {
+  display: inline-block;
+  margin-top: 18px;
+  padding: 6px 16px;
+  border-radius: 999px;
+  font-size: 0.74rem;
+  font-weight: 600;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: var(--fg-muted);
+  background: var(--bg-elevated);
+  border: 1px dashed var(--border-strong);
+}
+
+.lead {
+  margin-top: 26px;
+  color: var(--fg-soft);
+  font-size: clamp(0.92rem, 2.4vw, 1.02rem);
+  line-height: 1.9;
+}
+
+.actions {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 14px;
+  margin-top: 36px;
+}
+
+.primary {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 13px 26px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: #0b0d1a;
+  background: linear-gradient(135deg, var(--accent-soft), var(--accent));
+  box-shadow: 0 14px 38px var(--accent-glow);
+  transition: transform 0.25s ease, box-shadow 0.25s ease;
+}
+.primary:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 18px 44px var(--accent-glow);
+}
+.arrowBack {
+  display: inline-flex;
+  transition: transform 0.25s ease;
+}
+.primary:hover .arrowBack {
+  transform: translateX(-3px);
+}
+
+.secondary {
+  display: inline-flex;
+  align-items: center;
+  padding: 13px 26px;
+  border-radius: 999px;
+  font-weight: 600;
+  font-size: 0.92rem;
+  color: var(--fg);
+  border: 1px solid var(--border-strong);
+  background: var(--bg-card);
+  backdrop-filter: blur(8px);
+  transition: transform 0.25s ease, border-color 0.25s ease, color 0.25s ease;
+}
+.secondary:hover {
+  transform: translateY(-2px);
+  border-color: var(--accent);
+  color: var(--accent);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .aurora {
+    animation: none;
+  }
+  .primary,
+  .secondary,
+  .arrowBack {
+    transition: none;
+  }
+  .primary:hover,
+  .secondary:hover {
+    transform: none;
+  }
+}
