@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from 'next';
 import { Noto_Sans_JP, Space_Grotesk } from 'next/font/google';
+import { Analytics } from '@vercel/analytics/next';
 import { ThemeProvider, themeInitScript } from '@/components/ThemeProvider/ThemeProvider';
 import { StarryBackground } from '@/components/StarryBackground/StarryBackground';
 import './globals.css';
@@ -88,6 +89,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
           <StarryBackground />
           {children}
         </ThemeProvider>
+        <Analytics />
       </body>
     </html>
   );
