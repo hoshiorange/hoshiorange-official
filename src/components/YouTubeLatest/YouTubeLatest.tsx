@@ -1,5 +1,6 @@
 import Image from 'next/image';
 import { fetchLatestYouTubeVideos, getChannelUrl, getLiveStatus } from '@/lib/youtube';
+import { OfflineNotice } from '../OfflineNotice/OfflineNotice';
 import { YouTubeLiveCard } from './YouTubeLiveCard';
 import styles from './YouTubeLatest.module.css';
 
@@ -39,7 +40,7 @@ export async function YouTubeLatest() {
         <p className={styles.lead}>
           {isLive
             ? 'ただいま YouTube でライブ配信中です。'
-            : 'YouTube での配信・動画はこちらから。'}
+            : 'YouTube での配信・アーカイブはこちらから。'}
         </p>
       </div>
 
@@ -50,38 +51,16 @@ export async function YouTubeLatest() {
         ) : (
           /* ---- 非配信 / 取得失敗: 「今はオフライン・遊びに来てね」を主役にチャンネル誘導 ---- */
           <div className={styles.offlineWrap}>
-            <a
+            <OfflineNotice
+              copy="普段は YouTube で配信してます。よかったら遊びに来てね！"
+              ctaLabel="YouTube チャンネルへ"
               href={channelUrl}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.offlineCard}
-            >
-              <span className={styles.offlineBadge}>
-                <span className={styles.offlineDot} aria-hidden="true" />
-                OFFLINE
-              </span>
-              <p className={styles.offlineTitle}>いまは配信していません</p>
-              <p className={styles.offlineCopy}>
-                普段は YouTube で配信してます。よかったら遊びに来てね！
-              </p>
-              <span className={styles.channelCta}>
-                YouTube チャンネルへ
-                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
-                  <path
-                    d="M5 12h14M13 6l6 6-6 6"
-                    stroke="currentColor"
-                    strokeWidth="2"
-                    strokeLinecap="round"
-                    strokeLinejoin="round"
-                  />
-                </svg>
-              </span>
-            </a>
+            />
 
             {result && result.ok && result.videos.length > 0 ? (
               /* 過去の動画は控えめに副次表示（主役はあくまでチャンネル誘導） */
               <div className={styles.pastWrap}>
-                <p className={styles.pastNote}>過去の動画</p>
+                <p className={styles.pastNote}>過去のアーカイブ</p>
                 <ul className={styles.grid}>
                   {result.videos.map((v) => (
                     <li key={v.id}>

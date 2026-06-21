@@ -103,3 +103,31 @@ YouTube 枠上部に目立つ LIVE カードを表示する。配信していな
 - `.env.local.example`（`YOUTUBE_PREVIEW_LIVE=` 追記）
 
 **マージはユーザーが手動で squash 実施。**
+
+---
+
+## さらに追補（PR #4）: オフライン UI 共通化＋「動画」→「アーカイブ」文言統一
+
+### オフライン UI の共通化
+- YouTube オフライン表示の誘導カード（OFFLINE バッジ＋「いまは配信していません」＋親しみコピー＋CTA）を
+  共通コンポーネント **`src/components/OfflineNotice/`** に切り出し、**ツイキャス枠（006）と共有**。
+  両枠でオフライン時の見た目・トーンが揃い、CTA 先（`href`）と文言（`copy` / `ctaLabel`）だけ差し替える形。
+- これに伴い `YouTubeLatest.module.css` から重複していたオフラインカード系クラス
+  （`offlineCard` / `offlineBadge` / `channelCta` 等）と未使用化した `empty` / `placeholder` を削除。
+
+### 表示文言を配信メイン基調（「動画」→「アーカイブ」）に統一
+ユーザーは配信メインで、過去動画＝配信アーカイブのため、**画面に出る表示テキスト**を調整:
+- YouTube リード文「YouTube での配信・動画はこちらから。」→「YouTube での配信・**アーカイブ**はこちらから。」
+- YouTube 副次見出し「過去の動画」→「**過去のアーカイブ**」
+- Latest セクション説明（`LatestActivity.tsx`）「YouTube の最新動画と…」→「YouTube の**配信アーカイブ**と…」
+- ツイキャス側の「**過去の配信**」表記は据え置き（ツイキャス＝配信、YouTube＝アーカイブで使い分け）。
+- コンポーネント名・変数名・コメントは変更なし（表示テキストのみ）。
+
+### 変更ファイル（この追補分）
+- 新規 `src/components/OfflineNotice/OfflineNotice.tsx` / `OfflineNotice.module.css`
+- `src/components/YouTubeLatest/YouTubeLatest.tsx`（OfflineNotice 利用・文言変更）
+- `src/components/YouTubeLatest/YouTubeLatest.module.css`（重複/未使用クラス削除）
+- `src/components/TwitCastingStatus/TwitCastingStatus.tsx` / `.module.css`（オフライン統一・006 と整合）
+- `src/components/LatestActivity/LatestActivity.tsx`（説明文の文言）
+
+`npx tsc --noEmit` / `npm run build` 成功。ダーク/ライト・reduced-motion・Latest 2 カラム維持。**マージしない。**

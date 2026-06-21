@@ -165,14 +165,22 @@
   gap: 10px;
 }
 
-/* ---- オフライン: 最近の配信 ---- */
+/* ---- 非配信（オフライン）: 誘導カード（OfflineNotice）＋過去配信を縦に ---- */
 .offlineWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 22px;
+}
+
+/* ---- 過去の配信（副次表示。YouTube 枠の「過去の動画」と同じ扱い） ---- */
+.pastWrap {
   display: flex;
   flex-direction: column;
   gap: 14px;
 }
-.offlineNote {
+.pastNote {
   font-size: 0.85rem;
+  font-weight: 600;
   color: var(--fg-soft);
 }
 .recentList {
@@ -224,16 +232,6 @@
 .recentDate {
   font-size: 0.76rem;
   color: var(--fg-muted);
-}
-.profileLink {
-  align-self: flex-start;
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--accent);
-  transition: opacity 0.25s ease;
-}
-.profileLink:hover {
-  opacity: 0.78;
 }
 
 /* ---- フォールバックリンクカード ---- */

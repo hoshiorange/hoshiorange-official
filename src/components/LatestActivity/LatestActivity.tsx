@@ -12,7 +12,7 @@ export function LatestActivity() {
         <SectionHeading
           eyebrow="Latest"
           title="最新の動き。"
-          description="YouTube の最新動画とツイキャスの配信状況をまとめて表示しています。"
+          description="YouTube の配信アーカイブとツイキャスの配信状況をまとめて表示しています。"
         />
 
         <div className={styles.grid}>

@@ -1,5 +1,6 @@
 import { fetchTwitCastingStatus } from '@/lib/twitcasting';
 import type { TwitCastingMovie } from '@/types/twitcasting';
+import { OfflineNotice } from '../OfflineNotice/OfflineNotice';
 import styles from './TwitCastingStatus.module.css';
 
 const PROFILE_URL = 'https://twitcasting.tv/hoshiorange';
@@ -39,7 +40,7 @@ export async function TwitCastingStatus() {
           ツイキャス配信
         </h3>
         <p className={styles.lead}>
-          {isLive ? 'ただいまライブ配信中です。' : 'ツイキャスでのライブ配信状況を表示。'}
+          {isLive ? 'ただいまライブ配信中です。' : 'ツイキャスでの配信はこちらから。'}
         </p>
       </div>
 
@@ -83,48 +84,52 @@ export async function TwitCastingStatus() {
               </span>
             </div>
           </a>
-        ) : result.ok && recent.length > 0 ? (
-          /* ---- 配信していない: 最近の配信一覧 ---- */
+        ) : result.ok && !isLive ? (
+          /* ---- 非配信: 「いまは配信していません・遊びに来てね」を主役にツイキャス誘導 ----
+             （YouTube 枠のオフライン表示と OfflineNotice を共有してトーンを統一） */
           <div className={styles.offlineWrap}>
-            <p className={styles.offlineNote}>現在オフラインです。最近の配信:</p>
-            <ul className={styles.recentList}>
-              {recent.map((m) => (
-                <li key={m.id}>
-                  <a
-                    href={m.link || PROFILE_URL}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.recentItem}
-                  >
-                    <div className={styles.recentThumb}>
-                      {m.thumbnail ? (
-                        // eslint-disable-next-line @next/next/no-img-element
-                        <img src={m.thumbnail} alt="" className={styles.thumbImg} />
-                      ) : (
-                        <div className={styles.thumbPlaceholder} aria-hidden="true" />
-                      )}
-                    </div>
-                    <div className={styles.recentMeta}>
-                      <p className={styles.recentTitle}>{m.title || 'アーカイブ配信'}</p>
-                      <time className={styles.recentDate} dateTime={String(m.created)}>
-                        {formatDateTime(m.created)}
-                      </time>
-                    </div>
-                  </a>
-                </li>
-              ))}
-            </ul>
-            <a
+            <OfflineNotice
+              copy="普段はツイキャスで配信してます。よかったら遊びに来てね！"
+              ctaLabel="ツイキャスへ"
               href={PROFILE_URL}
-              target="_blank"
-              rel="noopener noreferrer"
-              className={styles.profileLink}
-            >
-              ツイキャスをすべて見る →
-            </a>
+            />
+
+            {recent.length > 0 ? (
+              /* 過去の配信（アーカイブ）は控えめに副次表示。主役はあくまでツイキャス誘導 */
+              <div className={styles.pastWrap}>
+                <p className={styles.pastNote}>過去の配信</p>
+                <ul className={styles.recentList}>
+                  {recent.map((m) => (
+                    <li key={m.id}>
+                      <a
+                        href={m.link || PROFILE_URL}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.recentItem}
+                      >
+                        <div className={styles.recentThumb}>
+                          {m.thumbnail ? (
+                            // eslint-disable-next-line @next/next/no-img-element
+                            <img src={m.thumbnail} alt="" className={styles.thumbImg} />
+                          ) : (
+                            <div className={styles.thumbPlaceholder} aria-hidden="true" />
+                          )}
+                        </div>
+                        <div className={styles.recentMeta}>
+                          <p className={styles.recentTitle}>{m.title || 'アーカイブ配信'}</p>
+                          <time className={styles.recentDate} dateTime={String(m.created)}>
+                            {formatDateTime(m.created)}
+                          </time>
+                        </div>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
         ) : (
-          /* ---- 取得失敗 / env 未設定 / 配信履歴なし: フォールバックリンクカード ---- */
+          /* ---- 取得失敗 / トークン未設定: フォールバックリンクカード ---- */
           <a
             href={PROFILE_URL}
             target="_blank"
@@ -144,11 +149,9 @@ export async function TwitCastingStatus() {
               <div>
                 <p className={styles.fallbackTitle}>ツイキャスを見る</p>
                 <p className={styles.fallbackHint}>
-                  {result.ok
-                    ? '配信状況はこちらから確認できます。'
-                    : result.reason === 'missing-env'
-                      ? '.env.local に TWITCASTING_ACCESS_TOKEN（または TWITCASTING_CLIENT_ID / TWITCASTING_CLIENT_SECRET）を設定すると配信状況が表示されます。'
-                      : '配信状況の取得に失敗しました。プロフィールから直接ご確認ください。'}
+                  {!result.ok && result.reason === 'missing-env'
+                    ? '.env.local に TWITCASTING_ACCESS_TOKEN（または TWITCASTING_CLIENT_ID / TWITCASTING_CLIENT_SECRET）を設定すると配信状況が表示されます。'
+                    : '配信状況の取得に失敗しました。プロフィールから直接ご確認ください。'}
                 </p>
               </div>
               <span className={styles.fallbackArrow} aria-hidden="true">
