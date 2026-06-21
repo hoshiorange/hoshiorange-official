@@ -30,11 +30,11 @@ src/
   components/
     Header/              ← ロゴ + アンカーナビ + ThemeToggle、スクロールで半透明化、モバイルメニュー
     Hero/                ← タイトル「hoshiorange-official」(シック) + リード文 + CTA(SNS=#links / 制作物=#lab) + 左右2カラム + HeroVisual(案A 3D)
-    LatestActivity/      ← YouTube 最新動画 + X タイムラインを統合した 1 セクション（Links より先）
+    LatestActivity/      ← YouTube 最新動画 + ツイキャス配信状況を統合した 1 セクション（Links より先）
     LinkCards/           ← データ駆動カード（バッジ撤去。X/YouTube/ツイキャス/GitHub の URL 設定済）
     Laboratory/          ← 制作物セクション。labs.ts が空のあいだは Coming Soon プレースホルダー
     YouTubeLatest/       ← Server Component、ISR 1h、env 未設定でもフォールバック
-    XTimeline/           ← クライアントで widgets.js 動的読み込み、テーマ切替で再描画
+    TwitCastingStatus/   ← Server Component、ツイキャス配信状況（配信中ライブ/最近の配信/リンクのフォールバック）。旧 XTimeline は 006 で廃止
     Contact/             ← @hoshiorange 提示（X リンク + Discord テキスト）、左右2カラム + ContactVisual(案B 3D)
     Contact/ContactVisual.tsx ← 案B（光る星）の 3D を透過配置
     Hero3D/              ← HeroLogo3D / HeroStar3D / HeroVisual / useReducedMotion（HeroScene3D は 005 で削除）
@@ -48,14 +48,17 @@ src/
     profile.ts / links.ts / labs.ts  ← 文面・リンク一覧・制作物一覧を一箇所で管理
   lib/
     youtube.ts            ← Data API v3 呼び出し（環境変数不在時は { ok: false } を返す）
+    twitcasting.ts        ← API v2 配信状況取得。認証 3 段（Bearer ACCESS_TOKEN 優先 → Basic ClientID/Secret → 無ければ { ok: false }）。is_live / current_live / movies
   types/
     youtube.ts
+    twitcasting.ts
 docs/
   001_initial-setup.md
   002_about-into-hero.md
   003_hero-official-hub.md
   004_session-redesign.md
   005_refactor-structure.md
+  006_twitcasting-status.md
 ```
 
 ## 3D / レイアウト再構成（004）
