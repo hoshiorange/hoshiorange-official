@@ -1,5 +1,6 @@
 import Image from 'next/image';
-import { fetchLatestYouTubeVideos } from '@/lib/youtube';
+import { fetchLatestYouTubeVideos, getLiveStatus } from '@/lib/youtube';
+import { YouTubeLiveCard } from './YouTubeLiveCard';
 import styles from './YouTubeLatest.module.css';
 
 function formatDate(iso: string): string {
@@ -17,17 +18,34 @@ function formatDate(iso: string): string {
 }
 
 export async function YouTubeLatest() {
-  const result = await fetchLatestYouTubeVideos(6);
+  // ライブ判定（短い ISR）と最新動画一覧（1h ISR）を並行取得
+  const [liveResult, result] = await Promise.all([
+    getLiveStatus(),
+    fetchLatestYouTubeVideos(6),
+  ]);
+
+  const isLive = liveResult.ok && liveResult.isLive;
 
   return (
     <div className={styles.panel} aria-labelledby="latest-youtube-heading">
       <div className={styles.head}>
         <h3 id="latest-youtube-heading" className={styles.heading}>
-          <span className={styles.headingMark} aria-hidden="true" />
+          <span
+            className={`${styles.headingMark} ${isLive ? styles.headingMarkLive : ''}`}
+            aria-hidden="true"
+          />
           最新の動画
         </h3>
-        <p className={styles.lead}>YouTube チャンネルから直近の投稿を自動取得。</p>
+        <p className={styles.lead}>
+          {isLive
+            ? 'ただいま YouTube でライブ配信中です。'
+            : 'YouTube チャンネルから直近の投稿を自動取得。'}
+        </p>
       </div>
+
+      {isLive && liveResult.ok && liveResult.isLive ? (
+        <YouTubeLiveCard live={liveResult.live} />
+      ) : null}
 
       <div className={styles.body}>
         {result.ok ? (
