@@ -8,8 +8,8 @@ import { profile } from '@/data/profile';
 import styles from './Header.module.css';
 
 const nav = [
-  { href: '#latest', label: 'Latest' },
   { href: '#links', label: 'Links' },
+  { href: '#latest', label: 'Streaming' },
   { href: '#lab', label: 'Laboratory' },
   { href: '#contact', label: 'Contact' },
 ];

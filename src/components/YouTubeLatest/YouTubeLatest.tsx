@@ -1,5 +1,7 @@
 import Image from 'next/image';
-import { fetchLatestYouTubeVideos } from '@/lib/youtube';
+import { fetchLatestYouTubeVideos, getChannelUrl, getLiveStatus } from '@/lib/youtube';
+import { OfflineNotice } from '../OfflineNotice/OfflineNotice';
+import { YouTubeLiveCard } from './YouTubeLiveCard';
 import styles from './YouTubeLatest.module.css';
 
 function formatDate(iso: string): string {
@@ -17,72 +19,90 @@ function formatDate(iso: string): string {
 }
 
 export async function YouTubeLatest() {
-  const result = await fetchLatestYouTubeVideos(6);
+  // ライブ判定（短い ISR）を先に確認。配信中なら最新動画一覧の取得は不要。
+  const liveResult = await getLiveStatus();
+  const isLive = liveResult.ok && liveResult.isLive;
+
+  // 配信中のときは動画グリッドを出さないので、無駄な API 呼び出しを避ける。
+  const result = isLive ? null : await fetchLatestYouTubeVideos(6);
+  const channelUrl = getChannelUrl();
 
   return (
     <div className={styles.panel} aria-labelledby="latest-youtube-heading">
       <div className={styles.head}>
         <h3 id="latest-youtube-heading" className={styles.heading}>
-          <span className={styles.headingMark} aria-hidden="true" />
-          最新の動画
+          <span
+            className={`${styles.headingMark} ${isLive ? styles.headingMarkLive : ''}`}
+            aria-hidden="true"
+          />
+          {isLive ? 'ライブ配信中' : 'YouTube'}
         </h3>
-        <p className={styles.lead}>YouTube チャンネルから直近の投稿を自動取得。</p>
+        <p className={styles.lead}>
+          {isLive
+            ? 'ただいま YouTube でライブ配信中です。'
+            : 'YouTube での配信・アーカイブはこちらから。'}
+        </p>
       </div>
 
       <div className={styles.body}>
-        {result.ok ? (
-          result.videos.length === 0 ? (
-            <p className={styles.empty}>まだ動画がありません。最初の投稿をお楽しみに。</p>
-          ) : (
-            <ul className={styles.grid}>
-              {result.videos.map((v) => (
-                <li key={v.id}>
-                  <a
-                    href={v.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.card}
-                  >
-                    <div className={styles.thumb}>
-                      {v.thumbnail ? (
-                        <Image
-                          src={v.thumbnail}
-                          alt=""
-                          width={480}
-                          height={270}
-                          className={styles.thumbImg}
-                          unoptimized
-                        />
-                      ) : (
-                        <div className={styles.thumbPlaceholder} aria-hidden="true" />
-                      )}
-                      <span className={styles.play} aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                          <path d="M8 5v14l11-7L8 5z" />
-                        </svg>
-                      </span>
-                    </div>
-                    <div className={styles.meta}>
-                      <h3 className={styles.title}>{v.title}</h3>
-                      <p className={styles.subline}>
-                        <span>{v.channelTitle}</span>
-                        <span aria-hidden="true">·</span>
-                        <time dateTime={v.publishedAt}>{formatDate(v.publishedAt)}</time>
-                      </p>
-                    </div>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )
+        {isLive && liveResult.ok && liveResult.isLive ? (
+          /* ---- 配信中: LIVE 配信カードを主役表示（動画グリッドは出さない） ---- */
+          <YouTubeLiveCard live={liveResult.live} />
         ) : (
-          <div className={styles.placeholder} role="status">
-            <p>{result.message}</p>
-            <p className={styles.placeholderHint}>
-              {result.reason === 'missing-env'
-                ? '.env.local に YOUTUBE_API_KEY と YOUTUBE_CHANNEL_ID を設定するとここに動画が並びます。'
-                : '時間をおいて再度アクセスしてください。'}
-            </p>
+          /* ---- 非配信 / 取得失敗: 「今はオフライン・遊びに来てね」を主役にチャンネル誘導 ---- */
+          <div className={styles.offlineWrap}>
+            <OfflineNotice
+              copy="普段は YouTube で配信してます。よかったら遊びに来てね！"
+              ctaLabel="YouTube チャンネルへ"
+              href={channelUrl}
+            />
+
+            {result && result.ok && result.videos.length > 0 ? (
+              /* 過去の動画は控えめに副次表示（主役はあくまでチャンネル誘導） */
+              <div className={styles.pastWrap}>
+                <p className={styles.pastNote}>過去のアーカイブ</p>
+                <ul className={styles.grid}>
+                  {result.videos.map((v) => (
+                    <li key={v.id}>
+                      <a
+                        href={v.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.card}
+                      >
+                        <div className={styles.thumb}>
+                          {v.thumbnail ? (
+                            <Image
+                              src={v.thumbnail}
+                              alt=""
+                              width={480}
+                              height={270}
+                              className={styles.thumbImg}
+                              unoptimized
+                            />
+                          ) : (
+                            <div className={styles.thumbPlaceholder} aria-hidden="true" />
+                          )}
+                          <span className={styles.play} aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                              <path d="M8 5v14l11-7L8 5z" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div className={styles.meta}>
+                          <h4 className={styles.title}>{v.title}</h4>
+                          <p className={styles.subline}>
+                            <span>{v.channelTitle}</span>
+                            <span aria-hidden="true">·</span>
+                            <time dateTime={v.publishedAt}>{formatDate(v.publishedAt)}</time>
+                          </p>
+                        </div>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
         )}
       </div>

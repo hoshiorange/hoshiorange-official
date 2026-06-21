@@ -24,6 +24,27 @@
   box-shadow: 0 0 12px var(--accent-glow);
   flex: none;
 }
+.headingMarkLive {
+  background: #ff3b30;
+  box-shadow: 0 0 12px rgba(255, 59, 48, 0.7);
+  animation: markPulse 1.6s ease-in-out infinite;
+}
+@keyframes markPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.6;
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .headingMarkLive {
+    animation: none;
+  }
+}
 .lead {
   font-size: 0.85rem;
   color: var(--fg-muted);
@@ -125,19 +146,22 @@
   color: var(--fg-muted);
 }
 
-.empty,
-.placeholder {
-  padding: 56px 24px;
-  border-radius: 20px;
-  background: var(--bg-card);
-  border: 1px dashed var(--border-strong);
-  text-align: center;
-  color: var(--fg-soft);
+/* ---- 非配信（オフライン）: 誘導カード（OfflineNotice）＋過去動画を縦に ---- */
+.offlineWrap {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 22px;
 }
-.placeholderHint {
+
+/* ---- 過去の動画（副次表示） ---- */
+.pastWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.pastNote {
   font-size: 0.85rem;
-  color: var(--fg-muted);
+  font-weight: 600;
+  color: var(--fg-soft);
 }
+

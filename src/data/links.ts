@@ -3,8 +3,15 @@
  * - `url` 未設定なら自動的に Coming Soon 表示（クリック無効）
  * - 配列に追記すれば自動的にカードが増える
  */
-export type LinkCategory = 'sns' | 'creative' | 'tech' | 'other';
-export type LinkIcon = 'x' | 'youtube' | 'twitcasting' | 'github' | 'note' | 'blog' | 'mail';
+export type LinkCategory = "sns" | "creative" | "tech" | "other";
+export type LinkIcon =
+  | "x"
+  | "youtube"
+  | "twitcasting"
+  | "github"
+  | "note"
+  | "blog"
+  | "mail";
 
 export interface LinkItem {
   id: string;
@@ -21,37 +28,38 @@ export interface LinkItem {
 
 export const links: LinkItem[] = [
   {
-    id: 'x',
-    label: 'X (Twitter)',
-    category: 'sns',
-    icon: 'x',
-    description: '日々のつぶやき・告知・雑感を投下する基地。',
-    url: 'https://x.com/hoshiorange',
+    id: "x",
+    label: "X (Twitter)",
+    category: "sns",
+    icon: "x",
+    description: "日々のつぶやき・告知・雑感を投下する基地。",
+    url: "https://x.com/hoshiorange",
   },
   {
-    id: 'youtube',
-    label: 'YouTube',
-    category: 'creative',
-    icon: 'youtube',
-    description: 'ゲーム実況・動画作品をアップロード予定。',
-    url: 'https://www.youtube.com/@hoshiorange4847',
+    id: "youtube",
+    label: "YouTube",
+    category: "creative",
+    icon: "youtube",
+    description: "ゲームの生配信してます",
+    url: "https://www.youtube.com/@hoshiorange4847",
   },
   {
-    id: 'twitcasting',
-    label: 'ツイキャス',
-    category: 'sns',
-    icon: 'twitcasting',
-    description: 'ライブ配信プラットフォーム。気軽なリアルタイム配信の拠点。',
-    url: 'https://twitcasting.tv/hoshiorange',
+    id: "twitcasting",
+    label: "ツイキャス",
+    category: "sns",
+    icon: "twitcasting",
+    description: "主にカラオケの生配信してます",
+    url: "https://twitcasting.tv/hoshiorange",
   },
   {
-    id: 'github',
-    label: 'GitHub',
-    category: 'tech',
-    icon: 'github',
-    description: '個人開発・OSS・実験のコード置き場。',
-    url: 'https://github.com/hoshiorange/',
+    id: "github",
+    label: "GitHub",
+    category: "tech",
+    icon: "github",
+    description: "個人開発・OSS・実験のコード置き場。",
+    url: "https://github.com/hoshiorange/",
   },
 ];
 
-export const linksByCategory = (cat: LinkCategory) => links.filter((l) => l.category === cat);
+export const linksByCategory = (cat: LinkCategory) =>
+  links.filter((l) => l.category === cat);
