@@ -147,7 +147,7 @@ export async function TwitCastingStatus() {
                   {result.ok
                     ? '配信状況はこちらから確認できます。'
                     : result.reason === 'missing-env'
-                      ? '.env.local に TWITCASTING_CLIENT_ID / TWITCASTING_CLIENT_SECRET を設定すると配信状況が表示されます。'
+                      ? '.env.local に TWITCASTING_ACCESS_TOKEN（または TWITCASTING_CLIENT_ID / TWITCASTING_CLIENT_SECRET）を設定すると配信状況が表示されます。'
                       : '配信状況の取得に失敗しました。プロフィールから直接ご確認ください。'}
                 </p>
               </div>

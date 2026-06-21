@@ -13,34 +13,54 @@ const DEFAULT_USER_ID = 'hoshiorange';
 const API_BASE = 'https://apiv2.twitcasting.tv';
 
 /**
- * TwitCasting API v2 から配信状況を取得する。
- * - 認証はアプリケーション単位の Basic 認証（base64(ClientID:ClientSecret)）。
- *   公開ユーザー情報の取得はこれで可能。
- * - 必須ヘッダ: Authorization / X-Api-Version: 2.0 / Accept: application/json
- * - 環境変数 TWITCASTING_CLIENT_ID / TWITCASTING_CLIENT_SECRET が未設定なら
- *   エラーで落とさず reason を返してフォールバックさせる。
- * - ライブ状況は変化が速いので revalidate は短め（既定 90 秒）。
+ * TwitCasting API v2 から配信状況を取得する（認証情報の有無で 3 段階に動作）。
+ *
+ * 認証フォールバック:
+ *   1. `TWITCASTING_ACCESS_TOKEN`（Bearer・サーバー専用）があれば最優先で使用。
+ *      → `Authorization: Bearer <token>`
+ *   2. 無く、`TWITCASTING_CLIENT_ID` / `TWITCASTING_CLIENT_SECRET` があれば
+ *      アプリケーション単位の Basic 認証で使用。
+ *      → `Authorization: Basic base64(ClientID:ClientSecret)`
+ *   3. どちらの認証情報も無い／API がエラー（401/403 等）を返したら
+ *      { ok:false } を返して安全にフォールバック（表示側はリンクカード）。
+ *
+ * いずれの認証でも同じエンドポイント（GET /users/{id} / current_live / movies）を呼ぶ。
+ * 必須ヘッダ: Authorization / X-Api-Version: 2.0 / Accept: application/json。
+ * ライブ状況は変化が速いので revalidate は短め（既定 90 秒）。
  */
 export async function fetchTwitCastingStatus(
   recentLimit = 4,
   liveRevalidateSeconds = 90,
 ): Promise<TwitCastingResult> {
+  const accessToken = process.env.TWITCASTING_ACCESS_TOKEN;
   const clientId = process.env.TWITCASTING_CLIENT_ID;
   const clientSecret = process.env.TWITCASTING_CLIENT_SECRET;
   const userId = process.env.TWITCASTING_USER_ID || DEFAULT_USER_ID;
 
-  if (!clientId || !clientSecret) {
+  // --- 認証ヘッダの決定（Bearer 優先 → Basic → 無し） ---
+  let authorization: string | null = null;
+  let authMode: 'bearer' | 'basic' = 'bearer';
+
+  if (accessToken) {
+    authorization = `Bearer ${accessToken}`;
+    authMode = 'bearer';
+  } else if (clientId && clientSecret) {
+    const basic = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
+    authorization = `Basic ${basic}`;
+    authMode = 'basic';
+  }
+
+  if (!authorization) {
     return {
       ok: false,
       reason: 'missing-env',
       message:
-        '配信状況が読み込めませんでした（環境変数 TWITCASTING_CLIENT_ID / TWITCASTING_CLIENT_SECRET を設定してください）。',
+        '配信状況が読み込めませんでした（環境変数 TWITCASTING_ACCESS_TOKEN、または TWITCASTING_CLIENT_ID / TWITCASTING_CLIENT_SECRET を設定してください）。',
     };
   }
 
-  const basic = Buffer.from(`${clientId}:${clientSecret}`).toString('base64');
   const headers: HeadersInit = {
-    Authorization: `Basic ${basic}`,
+    Authorization: authorization,
     'X-Api-Version': '2.0',
     Accept: 'application/json',
   };
@@ -58,7 +78,7 @@ export async function fetchTwitCastingStatus(
       return {
         ok: false,
         reason: 'api-error',
-        message: `ツイキャス API がエラーを返しました (status=${userRes.status})。`,
+        message: `ツイキャス API がエラーを返しました (status=${userRes.status}, auth=${authMode})。`,
       };
     }
 
@@ -108,7 +128,7 @@ export async function fetchTwitCastingStatus(
       recent = (moviesData.movies ?? []).map(mapMovie);
     }
 
-    return { ok: true, user, live, recent };
+    return { ok: true, authMode, user, live, recent };
   } catch (err) {
     return {
       ok: false,

@@ -48,7 +48,7 @@ src/
     profile.ts / links.ts / labs.ts  ← 文面・リンク一覧・制作物一覧を一箇所で管理
   lib/
     youtube.ts            ← Data API v3 呼び出し（環境変数不在時は { ok: false } を返す）
-    twitcasting.ts        ← API v2 Basic 認証で配信状況取得（is_live / current_live / movies、env 不在時は { ok: false }）
+    twitcasting.ts        ← API v2 配信状況取得。認証 3 段（Bearer ACCESS_TOKEN 優先 → Basic ClientID/Secret → 無ければ { ok: false }）。is_live / current_live / movies
   types/
     youtube.ts
     twitcasting.ts

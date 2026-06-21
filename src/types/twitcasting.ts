@@ -26,10 +26,15 @@ export interface TwitCastingMovie {
   duration: number;
 }
 
-/** ツイキャス配信状況の取得結果。 */
+/**
+ * ツイキャス配信状況の取得結果。
+ * - authMode: どの認証で取得したか（'bearer' | 'basic'）。表示には影響しないが診断用。
+ * - 認証情報が無い／API エラー時は { ok:false } を返し、表示側はリンクカードにフォールバック。
+ */
 export type TwitCastingResult =
   | {
       ok: true;
+      authMode: 'bearer' | 'basic';
       user: TwitCastingUser;
       /** ライブ中なら現在の配信、そうでなければ null */
       live: TwitCastingMovie | null;
