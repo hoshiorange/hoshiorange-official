@@ -15,7 +15,7 @@ export function LatestActivity() {
       <div className={styles.container}>
         <SectionHeading
           eyebrow="Streaming"
-          title="配信情報"
+          title="生配信情報"
           description="YouTube の配信アーカイブとツイキャスの配信状況をまとめて表示しています。"
         />
 
