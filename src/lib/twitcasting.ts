@@ -13,6 +13,16 @@ const DEFAULT_USER_ID = 'hoshiorange';
 const API_BASE = 'https://apiv2.twitcasting.tv';
 
 /**
+ * 画像 URL を https に正規化する。
+ * ツイキャス API はサムネ・アイコンを `http://` で返すことがあり、本番（HTTPS）で
+ * そのまま <img src> に渡すと Mixed Content 警告になる。`http://` を `https://`
+ * に置換して安全側に寄せる（`https://` / 相対 / 空文字はそのまま）。
+ */
+function toHttps(url: string): string {
+  return url.replace(/^http:\/\//i, 'https://');
+}
+
+/**
  * TwitCasting API v2 から配信状況を取得する（認証情報の有無で 3 段階に動作）。
  *
  * 認証フォールバック:
@@ -96,7 +106,7 @@ export async function fetchTwitCastingStatus(
       id: rawUser.id ?? '',
       screenId: rawUser.screen_id ?? userId,
       name: rawUser.name ?? '',
-      image: rawUser.image ?? '',
+      image: toHttps(rawUser.image ?? ''),
       profile: rawUser.profile ?? '',
       isLive: Boolean(rawUser.is_live),
       lastMovieId: rawUser.last_movie_id ?? null,
@@ -146,7 +156,7 @@ function mapMovie(m: RawMovie): TwitCastingMovie {
     link: m.link ?? '',
     isLive: Boolean(m.is_live),
     isRecorded: Boolean(m.is_recorded),
-    thumbnail: m.large_thumbnail ?? m.small_thumbnail ?? '',
+    thumbnail: toHttps(m.large_thumbnail ?? m.small_thumbnail ?? ''),
     created: typeof m.created === 'number' ? m.created : 0,
     currentViewCount: typeof m.current_view_count === 'number' ? m.current_view_count : 0,
     totalViewCount: typeof m.total_view_count === 'number' ? m.total_view_count : 0,
