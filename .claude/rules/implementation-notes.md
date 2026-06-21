@@ -135,6 +135,9 @@ docs/
 - 作業のたびに `docs/NNN_作業名.md` を作成
 - 仕様変更・追加実装の都度このファイルを更新
 
+## マージ後の定例フロー
+- PR が main にマージされたら、`main` へ切替 → `git pull` で最新化 → マージ済み feature ブランチをローカル・リモートとも削除 → 次の作業は最新 main から新しい feature ブランチを作成して開始する。
+
 ## 残課題（コンテンツ／コンフィグ系）
 - Hero / Contact の文面差し替え（コード内 `{/* TODO: 文面を差し替える */}` 参照。About は廃止済）
 - `src/data/links.ts` の URL を埋めて `comingSoon: true` を外す
