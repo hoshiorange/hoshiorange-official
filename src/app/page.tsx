@@ -12,9 +12,9 @@ export default function HomePage() {
       <Header />
       <main>
         <Hero />
+        <LinkCards />
         {/* YouTube 最新動画 + X タイムラインを 1 セクションに統合 */}
         <LatestActivity />
-        <LinkCards />
         {/* 制作物（サービス／サイト／ゲーム／コミュニティ等）。現状は Coming Soon */}
         <Laboratory />
         <Contact />
