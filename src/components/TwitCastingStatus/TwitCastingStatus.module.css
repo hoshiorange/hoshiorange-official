@@ -1,0 +1,295 @@
+.panel {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+.head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.heading {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 1.15rem;
+  font-weight: 600;
+  line-height: 1.3;
+}
+.headingMark {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: var(--accent);
+  box-shadow: 0 0 12px var(--accent-glow);
+  flex: none;
+}
+.headingMarkLive {
+  background: #ff3b30;
+  box-shadow: 0 0 12px rgba(255, 59, 48, 0.7);
+  animation: pulse 1.6s ease-in-out infinite;
+}
+@keyframes pulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+  50% {
+    transform: scale(1.35);
+    opacity: 0.6;
+  }
+}
+.lead {
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+}
+.body {
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---- 共通カード ---- */
+.card {
+  display: flex;
+  flex-direction: column;
+  border-radius: 20px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  overflow: hidden;
+  transition: transform 0.35s cubic-bezier(0.2, 0.8, 0.2, 1), border-color 0.3s ease,
+    box-shadow 0.3s ease, background 0.3s ease;
+  isolation: isolate;
+}
+.card:hover {
+  transform: translateY(-4px);
+  border-color: var(--border-strong);
+  box-shadow: var(--shadow-card);
+  background: var(--bg-card-hover);
+}
+.card:hover .thumbImg {
+  transform: scale(1.04);
+}
+
+/* ---- 配信中カード ---- */
+.liveCard {
+  border-color: color-mix(in srgb, #ff3b30 45%, var(--border));
+  box-shadow: 0 0 0 1px color-mix(in srgb, #ff3b30 25%, transparent),
+    0 18px 40px -22px rgba(255, 59, 48, 0.55);
+}
+.thumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+.thumbImg {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: transform 0.6s ease;
+}
+.thumbPlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(135deg, var(--bg-elevated), var(--bg-card));
+}
+.liveBadge {
+  position: absolute;
+  top: 12px;
+  left: 12px;
+  display: inline-flex;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 11px;
+  border-radius: 999px;
+  background: #ff3b30;
+  color: #fff;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.08em;
+  box-shadow: 0 6px 18px -6px rgba(255, 59, 48, 0.8);
+}
+.liveDot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #fff;
+  animation: pulse 1.6s ease-in-out infinite;
+}
+
+.meta {
+  padding: 18px 20px 22px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.liveLabel {
+  font-size: 0.75rem;
+  font-weight: 700;
+  letter-spacing: 0.06em;
+  color: #ff5a4f;
+}
+.title {
+  font-size: 1.02rem;
+  font-weight: 600;
+  line-height: 1.5;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.subtitle {
+  font-size: 0.85rem;
+  color: var(--fg-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.watchCta {
+  margin-top: 6px;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  align-self: flex-start;
+  padding: 9px 16px;
+  border-radius: 999px;
+  background: var(--accent);
+  color: #0b0d1a;
+  font-size: 0.85rem;
+  font-weight: 700;
+  transition: gap 0.25s ease, transform 0.25s ease;
+}
+.card:hover .watchCta {
+  gap: 10px;
+}
+
+/* ---- オフライン: 最近の配信 ---- */
+.offlineWrap {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+.offlineNote {
+  font-size: 0.85rem;
+  color: var(--fg-soft);
+}
+.recentList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+.recentItem {
+  display: grid;
+  grid-template-columns: 112px minmax(0, 1fr);
+  gap: 14px;
+  align-items: center;
+  padding: 10px;
+  border-radius: 16px;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  transition: transform 0.3s ease, border-color 0.3s ease, background 0.3s ease;
+}
+.recentItem:hover {
+  transform: translateX(3px);
+  border-color: var(--border-strong);
+  background: var(--bg-card-hover);
+}
+.recentThumb {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  border-radius: 10px;
+  overflow: hidden;
+  background: var(--bg-elevated);
+}
+.recentMeta {
+  display: flex;
+  flex-direction: column;
+  gap: 5px;
+  min-width: 0;
+}
+.recentTitle {
+  font-size: 0.9rem;
+  font-weight: 600;
+  line-height: 1.4;
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.recentDate {
+  font-size: 0.76rem;
+  color: var(--fg-muted);
+}
+.profileLink {
+  align-self: flex-start;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: var(--accent);
+  transition: opacity 0.25s ease;
+}
+.profileLink:hover {
+  opacity: 0.78;
+}
+
+/* ---- フォールバックリンクカード ---- */
+.fallbackCard {
+  border-style: dashed;
+  border-color: var(--border-strong);
+}
+.fallbackInner {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+  padding: 24px 22px;
+}
+.fallbackIcon {
+  flex: none;
+  width: 52px;
+  height: 52px;
+  border-radius: 14px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  background: var(--bg-elevated);
+  color: var(--accent);
+  border: 1px solid var(--border);
+}
+.fallbackTitle {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.fallbackHint {
+  margin-top: 4px;
+  font-size: 0.82rem;
+  color: var(--fg-muted);
+  line-height: 1.5;
+}
+.fallbackArrow {
+  margin-left: auto;
+  flex: none;
+  font-size: 1.2rem;
+  color: var(--accent);
+  transition: transform 0.25s ease;
+}
+.fallbackCard:hover .fallbackArrow {
+  transform: translateX(4px);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .headingMarkLive,
+  .liveDot {
+    animation: none;
+  }
+  .card,
+  .recentItem,
+  .thumbImg,
+  .watchCta,
+  .fallbackArrow {
+    transition: none;
+  }
+}

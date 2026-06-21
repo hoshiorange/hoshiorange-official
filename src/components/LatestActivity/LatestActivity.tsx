@@ -1,9 +1,9 @@
 import { SectionHeading } from '@/components/Section/SectionHeading';
 import { YouTubeLatest } from '@/components/YouTubeLatest/YouTubeLatest';
-import { XTimeline } from '@/components/XTimeline/XTimeline';
+import { TwitCastingStatus } from '@/components/TwitCastingStatus/TwitCastingStatus';
 import styles from './LatestActivity.module.css';
 
-// YouTube 最新動画と X タイムラインを 1 セクションに統合するラッパー。
+// YouTube 最新動画とツイキャス配信状況を 1 セクションに統合するラッパー。
 // 見出しはここで 1 つに集約し、各子コンポーネントは中身（パネル）だけを返す。
 export function LatestActivity() {
   return (
@@ -12,13 +12,13 @@ export function LatestActivity() {
         <SectionHeading
           eyebrow="Latest"
           title="最新の動き。"
-          description="YouTube と X から直近の活動をまとめて表示しています。"
+          description="YouTube の最新動画とツイキャスの配信状況をまとめて表示しています。"
         />
 
         <div className={styles.grid}>
-          {/* YouTubeLatest はサーバーコンポーネントとして fetch して ISR で再検証 */}
+          {/* どちらもサーバーコンポーネントとして fetch し ISR で再検証 */}
           <YouTubeLatest />
-          <XTimeline />
+          <TwitCastingStatus />
         </div>
       </div>
     </section>
