@@ -6,6 +6,14 @@
  */
 export type LabCategory = 'service' | 'site' | 'game' | 'community' | 'other';
 
+/**
+ * `url` がスラッシュ始まり（`/lab/...` 等）の場合はサイト内ページとみなし、
+ * next/link で同一タブ遷移する。`http(s)://` 等の外部 URL は別タブで開く。
+ */
+export function isInternalUrl(url?: string): boolean {
+  return typeof url === 'string' && url.startsWith('/');
+}
+
 export interface LabItem {
   id: string;
   /** 制作物名 */
@@ -34,4 +42,13 @@ export interface LabItem {
  *     tags: ['Next.js', 'TypeScript'],
  *   }
  */
-export const labs: LabItem[] = [];
+export const labs: LabItem[] = [
+  {
+    id: 'koori-no-nukemichi',
+    title: 'こおりのぬけみち',
+    description: '氷の世界を進むミニゲーム。',
+    url: '/lab/koori-no-nukemichi',
+    category: 'game',
+    tags: ['Game'],
+  },
+];
