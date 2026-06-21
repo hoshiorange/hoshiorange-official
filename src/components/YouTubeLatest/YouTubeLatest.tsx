@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { fetchLatestYouTubeVideos, getLiveStatus } from '@/lib/youtube';
+import { fetchLatestYouTubeVideos, getChannelUrl, getLiveStatus } from '@/lib/youtube';
 import { YouTubeLiveCard } from './YouTubeLiveCard';
 import styles from './YouTubeLatest.module.css';
 
@@ -18,13 +18,13 @@ function formatDate(iso: string): string {
 }
 
 export async function YouTubeLatest() {
-  // ライブ判定（短い ISR）と最新動画一覧（1h ISR）を並行取得
-  const [liveResult, result] = await Promise.all([
-    getLiveStatus(),
-    fetchLatestYouTubeVideos(6),
-  ]);
-
+  // ライブ判定（短い ISR）を先に確認。配信中なら最新動画一覧の取得は不要。
+  const liveResult = await getLiveStatus();
   const isLive = liveResult.ok && liveResult.isLive;
+
+  // 配信中のときは動画グリッドを出さないので、無駄な API 呼び出しを避ける。
+  const result = isLive ? null : await fetchLatestYouTubeVideos(6);
+  const channelUrl = getChannelUrl();
 
   return (
     <div className={styles.panel} aria-labelledby="latest-youtube-heading">
@@ -34,73 +34,96 @@ export async function YouTubeLatest() {
             className={`${styles.headingMark} ${isLive ? styles.headingMarkLive : ''}`}
             aria-hidden="true"
           />
-          最新の動画
+          {isLive ? 'ライブ配信中' : 'YouTube'}
         </h3>
         <p className={styles.lead}>
           {isLive
             ? 'ただいま YouTube でライブ配信中です。'
-            : 'YouTube チャンネルから直近の投稿を自動取得。'}
+            : 'YouTube での配信・動画はこちらから。'}
         </p>
       </div>
 
-      {isLive && liveResult.ok && liveResult.isLive ? (
-        <YouTubeLiveCard live={liveResult.live} />
-      ) : null}
-
       <div className={styles.body}>
-        {result.ok ? (
-          result.videos.length === 0 ? (
-            <p className={styles.empty}>まだ動画がありません。最初の投稿をお楽しみに。</p>
-          ) : (
-            <ul className={styles.grid}>
-              {result.videos.map((v) => (
-                <li key={v.id}>
-                  <a
-                    href={v.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className={styles.card}
-                  >
-                    <div className={styles.thumb}>
-                      {v.thumbnail ? (
-                        <Image
-                          src={v.thumbnail}
-                          alt=""
-                          width={480}
-                          height={270}
-                          className={styles.thumbImg}
-                          unoptimized
-                        />
-                      ) : (
-                        <div className={styles.thumbPlaceholder} aria-hidden="true" />
-                      )}
-                      <span className={styles.play} aria-hidden="true">
-                        <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
-                          <path d="M8 5v14l11-7L8 5z" />
-                        </svg>
-                      </span>
-                    </div>
-                    <div className={styles.meta}>
-                      <h3 className={styles.title}>{v.title}</h3>
-                      <p className={styles.subline}>
-                        <span>{v.channelTitle}</span>
-                        <span aria-hidden="true">·</span>
-                        <time dateTime={v.publishedAt}>{formatDate(v.publishedAt)}</time>
-                      </p>
-                    </div>
-                  </a>
-                </li>
-              ))}
-            </ul>
-          )
+        {isLive && liveResult.ok && liveResult.isLive ? (
+          /* ---- 配信中: LIVE 配信カードを主役表示（動画グリッドは出さない） ---- */
+          <YouTubeLiveCard live={liveResult.live} />
         ) : (
-          <div className={styles.placeholder} role="status">
-            <p>{result.message}</p>
-            <p className={styles.placeholderHint}>
-              {result.reason === 'missing-env'
-                ? '.env.local に YOUTUBE_API_KEY と YOUTUBE_CHANNEL_ID を設定するとここに動画が並びます。'
-                : '時間をおいて再度アクセスしてください。'}
-            </p>
+          /* ---- 非配信 / 取得失敗: 「今はオフライン・遊びに来てね」を主役にチャンネル誘導 ---- */
+          <div className={styles.offlineWrap}>
+            <a
+              href={channelUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+              className={styles.offlineCard}
+            >
+              <span className={styles.offlineBadge}>
+                <span className={styles.offlineDot} aria-hidden="true" />
+                OFFLINE
+              </span>
+              <p className={styles.offlineTitle}>いまは配信していません</p>
+              <p className={styles.offlineCopy}>
+                普段は YouTube で配信してます。よかったら遊びに来てね！
+              </p>
+              <span className={styles.channelCta}>
+                YouTube チャンネルへ
+                <svg viewBox="0 0 24 24" width="16" height="16" fill="none" aria-hidden="true">
+                  <path
+                    d="M5 12h14M13 6l6 6-6 6"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </span>
+            </a>
+
+            {result && result.ok && result.videos.length > 0 ? (
+              /* 過去の動画は控えめに副次表示（主役はあくまでチャンネル誘導） */
+              <div className={styles.pastWrap}>
+                <p className={styles.pastNote}>過去の動画</p>
+                <ul className={styles.grid}>
+                  {result.videos.map((v) => (
+                    <li key={v.id}>
+                      <a
+                        href={v.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className={styles.card}
+                      >
+                        <div className={styles.thumb}>
+                          {v.thumbnail ? (
+                            <Image
+                              src={v.thumbnail}
+                              alt=""
+                              width={480}
+                              height={270}
+                              className={styles.thumbImg}
+                              unoptimized
+                            />
+                          ) : (
+                            <div className={styles.thumbPlaceholder} aria-hidden="true" />
+                          )}
+                          <span className={styles.play} aria-hidden="true">
+                            <svg viewBox="0 0 24 24" width="22" height="22" fill="currentColor">
+                              <path d="M8 5v14l11-7L8 5z" />
+                            </svg>
+                          </span>
+                        </div>
+                        <div className={styles.meta}>
+                          <h4 className={styles.title}>{v.title}</h4>
+                          <p className={styles.subline}>
+                            <span>{v.channelTitle}</span>
+                            <span aria-hidden="true">·</span>
+                            <time dateTime={v.publishedAt}>{formatDate(v.publishedAt)}</time>
+                          </p>
+                        </div>
+                      </a>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+            ) : null}
           </div>
         )}
       </div>

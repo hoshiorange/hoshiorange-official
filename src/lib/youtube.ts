@@ -4,6 +4,20 @@ import type {
   YouTubeVideo,
 } from '@/types/youtube';
 
+/** hoshiorange の YouTube ハンドル（チャンネル誘導 CTA のフォールバック先）。 */
+const YOUTUBE_HANDLE_URL = 'https://www.youtube.com/@hoshiorange4847';
+
+/**
+ * 視聴者をチャンネルへ誘導するための URL を返す。
+ * - YOUTUBE_CHANNEL_ID があれば `https://www.youtube.com/channel/{id}` を使用
+ * - 無ければハンドル URL（@hoshiorange4847）にフォールバック
+ * チャンネル ID はサーバー専用 env のため、この関数経由でクライアントに渡す。
+ */
+export function getChannelUrl(): string {
+  const channelId = process.env.YOUTUBE_CHANNEL_ID;
+  return channelId ? `https://www.youtube.com/channel/${channelId}` : YOUTUBE_HANDLE_URL;
+}
+
 /**
  * YouTube Data API v3 から最新動画を取得する。
  * - 環境変数 YOUTUBE_API_KEY / YOUTUBE_CHANNEL_ID が未設定ならエラーで落とさず reason を返す
@@ -85,6 +99,25 @@ export async function fetchLatestYouTubeVideos(maxResults = 6): Promise<YouTubeR
  * - クォータ注意: search.list は 1 回 100 units。ISR（revalidate）で呼び出し回数を抑える。
  */
 export async function getLiveStatus(): Promise<YouTubeLiveResult> {
+  // --- ローカル確認用の強制プレビュー ---
+  // 環境変数 YOUTUBE_PREVIEW_LIVE が 1 / true のときは API を呼ばずに
+  // ダミーのライブ結果を返す。配信していなくても配信中表示を確認できる。
+  // 本番では未設定 / 0 にしておけば通常動作（無害）。
+  const preview = process.env.YOUTUBE_PREVIEW_LIVE;
+  if (preview === '1' || preview?.toLowerCase() === 'true') {
+    return {
+      ok: true,
+      isLive: true,
+      live: {
+        id: 'preview',
+        title: '（プレビュー）テスト配信中',
+        // i.ytimg.com の汎用サムネ（remotePatterns で許可済みのホスト）。
+        thumbnail: 'https://i.ytimg.com/vi/dQw4w9WgXcQ/maxresdefault.jpg',
+        url: 'https://www.youtube.com/watch?v=dQw4w9WgXcQ',
+      },
+    };
+  }
+
   const apiKey = process.env.YOUTUBE_API_KEY;
   const channelId = process.env.YOUTUBE_CHANNEL_ID;
 

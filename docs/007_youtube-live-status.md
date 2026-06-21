@@ -53,3 +53,53 @@ YouTube 枠上部に目立つ LIVE カードを表示する。配信していな
   通常表示になることを確認済み（dev も HTTP 200）。
 - ユーザー作業: PR を手動 squash merge すれば本番反映。追加の環境変数は不要
   （既存の `YOUTUBE_API_KEY` / `YOUTUBE_CHANNEL_ID` をそのまま使用）。
+
+---
+
+## 更新（PR #4 追補）: 配信メイン導線への作り替え＋プレビュートグル
+
+### 背景
+ユーザーは「動画」ではなく「配信」がメインの人。YouTube 枠を
+「配信してるか・来てね」を主役にした導線に作り替える（ツイキャス枠と思想を統一）。
+
+### 表示ロジックの変更（`YouTubeLatest.tsx`）
+- **配信中（isLive:true）** → LIVE 配信カードを **主役表示**（見出し「ライブ配信中」・赤脈動ドット）。
+  従来は LIVE カード＋動画グリッドの併記だったが、**動画グリッドは出さない**。
+  配信中は動画一覧の取得（`fetchLatestYouTubeVideos`）自体をスキップし API 呼び出しを節約。
+- **非配信 / 取得失敗 / env 未設定** → 「いまは配信していません（OFFLINE バッジ）」＋
+  親しみコピー「普段は YouTube で配信してます。よかったら遊びに来てね！」＋
+  **「YouTube チャンネルへ →」CTA**（新規タブ）を主役に表示。
+  さらに最新動画があれば「過去の動画」として **副次的に** グリッドを下に残す
+  （主役はチャンネル誘導、動画はおまけ）。
+- チャンネル URL は `getChannelUrl()` を新設（`src/lib/youtube.ts`）。
+  `YOUTUBE_CHANNEL_ID` があれば `https://www.youtube.com/channel/{id}`、
+  無ければハンドル `https://www.youtube.com/@hoshiorange4847` にフォールバック。
+- オフラインカード・過去動画見出しの CSS を `YouTubeLatest.module.css` に追加
+  （`offlineCard` / `offlineBadge` / `channelCta` / `pastWrap` 等、reduced-motion 対応）。
+
+### ローカル確認用プレビュートグル（`getLiveStatus()` / 環境変数）
+- 環境変数 **`YOUTUBE_PREVIEW_LIVE`** を追加。`1` または `true` のとき
+  API を呼ばずに **ダミーのライブ結果**（`isLive:true`／タイトル「（プレビュー）テスト配信中」／
+  サムネは `i.ytimg.com` の汎用画像／watch URL はダミー）を返す。
+- 配信していなくてもローカルで「配信中表示」を確認できる。本番では未設定 / 0 で通常動作（無害）。
+- `.env.local.example` と `.env.local` に `YOUTUBE_PREVIEW_LIVE=`（コメント付き）を追記。
+
+### 使い方（ユーザー向け）
+1. `.env.local` の `YOUTUBE_PREVIEW_LIVE=1` にする
+2. dev を再起動（env 変更は再起動が必要）
+3. トップを開くと YouTube 枠が「🔴 配信中」表示になる（動画グリッドは非表示）
+4. 確認後は `YOUTUBE_PREVIEW_LIVE=`（空）または `0` に戻す → 通常のオフライン表示に戻る
+
+### 確認結果
+- `YOUTUBE_PREVIEW_LIVE=1`（dev:3100）: 見出し「ライブ配信中」・LIVE カードのみ・動画グリッド 0 件を確認。
+- `YOUTUBE_PREVIEW_LIVE=0`（dev:3200）: OFFLINE バッジ＋誘導コピー＋「YouTube チャンネルへ →」
+  （`channel/UCvyrDK_b-3qZhEFa0AzwOEg`・新規タブ）＋過去の動画 6 件のグリッドを確認。
+- ダーク / ライト両テーマで表示確認済み。`npx tsc --noEmit` / `npm run build` 成功。
+
+### 変更ファイル（追補分）
+- `src/lib/youtube.ts`（`YOUTUBE_PREVIEW_LIVE` 分岐・`getChannelUrl()` 追加）
+- `src/components/YouTubeLatest/YouTubeLatest.tsx`（配信中=主役・非配信=チャンネル誘導＋過去動画）
+- `src/components/YouTubeLatest/YouTubeLatest.module.css`（オフライン／過去動画スタイル）
+- `.env.local.example`（`YOUTUBE_PREVIEW_LIVE=` 追記）
+
+**マージはユーザーが手動で squash 実施。**
