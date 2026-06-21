@@ -59,6 +59,62 @@
   overflow: hidden;
   min-height: 620px;
 }
+.embed[data-hidden='true'] {
+  display: none;
+}
+.fallback {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 14px;
+  min-height: 620px;
+  padding: 48px 24px;
+  border-radius: 16px;
+  border: 1px solid var(--border-strong);
+  background: var(--bg-elevated);
+  color: var(--fg);
+  text-align: center;
+  text-decoration: none;
+  transition: border-color 0.2s ease, transform 0.2s ease, box-shadow 0.2s ease;
+}
+.fallback:hover {
+  border-color: var(--accent);
+  transform: translateY(-2px);
+  box-shadow: 0 12px 32px var(--accent-glow);
+}
+.fallbackIcon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  color: var(--fg);
+}
+.fallbackText {
+  font-size: 1rem;
+  font-weight: 600;
+}
+.fallbackArrow {
+  font-size: 1.1rem;
+  color: var(--accent);
+  transition: transform 0.2s ease;
+}
+.fallback:hover .fallbackArrow {
+  transform: translateX(4px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .fallback,
+  .fallback:hover,
+  .fallbackArrow,
+  .fallback:hover .fallbackArrow {
+    transition: none;
+    transform: none;
+  }
+}
 .skeleton {
   height: 620px;
   border-radius: 16px;
