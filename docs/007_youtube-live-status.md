@@ -131,3 +131,33 @@ YouTube 枠上部に目立つ LIVE カードを表示する。配信していな
 - `src/components/LatestActivity/LatestActivity.tsx`（説明文の文言）
 
 `npx tsc --noEmit` / `npm run build` 成功。ダーク/ライト・reduced-motion・Latest 2 カラム維持。**マージしない。**
+
+---
+
+## さらに追補（PR #4）: Latest セクションを「配信情報」に変更し表記を Streaming に統一
+
+### 背景
+ユーザーが Latest セクションを「配信メイン」のサイト方針に合わせて作り替え。
+セクション見出しを英語基調の「最新の動き。」から日本語「配信情報」へ変更したのに伴い、
+周辺の英語ラベル（eyebrow / ヘッダー・フッターのナビ）が旧称「Latest」のままで不整合だったため統一する。
+
+### 変更内容（表示テキストのみ。href / id は不変）
+- `LatestActivity.tsx`: セクション見出し `title` 「最新の動き。」→「**配信情報**」（句点なし。ユーザー変更）、
+  eyebrow `Latest` →「**Streaming**」。
+- `Header.tsx`: ナビ項目ラベル `Latest` →「**Streaming**」（`href="#latest"` は据え置き）。
+- `Footer.tsx`: フッターリンク表示テキスト `Latest` →「**Streaming**」（`href="#latest"` は据え置き）。
+- `TwitCastingStatus.tsx`: オフライン誘導コピーを「ツイキャスで**カラオケ配信**してます。よかったら遊びに来てね！」に変更（ユーザー変更）。
+- `id="latest"` / `aria-labelledby` などの内部 ID、`description` は変更なし。
+
+### 確認結果
+- `npx tsc --noEmit` 成功。
+- dev（localhost:3100, HTTP 200）で確認: eyebrow「Streaming」/ 見出し「配信情報」/ ヘッダー・フッターナビ「Streaming」表示、
+  ページ内に旧「Latest」表記が残っていないこと、`#latest` アンカー遷移、ダーク/ライト両テーマで崩れなしを Playwright で確認。
+
+### 変更ファイル（この追補分）
+- `src/components/LatestActivity/LatestActivity.tsx`
+- `src/components/Header/Header.tsx`
+- `src/components/Footer/Footer.tsx`
+- `src/components/TwitCastingStatus/TwitCastingStatus.tsx`
+
+**マージしない。**
