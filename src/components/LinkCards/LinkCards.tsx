@@ -1,16 +1,20 @@
-import { SectionHeading } from '@/components/Section/SectionHeading';
-import { links, type LinkItem } from '@/data/links';
-import { LinkIcon } from './LinkIcon';
-import styles from './LinkCards.module.css';
+import { SectionHeading } from "@/components/Section/SectionHeading";
+import { links, type LinkItem } from "@/data/links";
+import { LinkIcon } from "./LinkIcon";
+import styles from "./LinkCards.module.css";
 
 export function LinkCards() {
   return (
-    <section id="links" className={styles.section} aria-labelledby="links-title">
+    <section
+      id="links"
+      className={styles.section}
+      aria-labelledby="links-title"
+    >
       <div className={styles.container}>
         <SectionHeading
           eyebrow="Featured Links"
           title="主な活動拠点。"
-          description="各 SNS・チャンネルへの入口です。「Coming Soon」は近日開設予定の枠を確保しています。"
+          description="各 SNS・チャンネルへの入口です。"
         />
 
         <ul className={styles.grid}>
@@ -27,7 +31,7 @@ export function LinkCards() {
 
 function Card({ item }: { item: LinkItem }) {
   const isComing = item.comingSoon || !item.url;
-  const className = `${styles.card} ${isComing ? styles.coming : ''} ${styles[`category_${item.category}`] ?? ''}`;
+  const className = `${styles.card} ${isComing ? styles.coming : ""} ${styles[`category_${item.category}`] ?? ""}`;
 
   const content = (
     <>
@@ -38,7 +42,9 @@ function Card({ item }: { item: LinkItem }) {
         </span>
       </div>
       <h3 className={styles.cardTitle}>{item.label}</h3>
-      {item.description && <p className={styles.cardDesc}>{item.description}</p>}
+      {item.description && (
+        <p className={styles.cardDesc}>{item.description}</p>
+      )}
       <span className={styles.arrow} aria-hidden="true">
         <svg viewBox="0 0 24 24" width="18" height="18" fill="none">
           <path
@@ -62,7 +68,12 @@ function Card({ item }: { item: LinkItem }) {
   }
 
   return (
-    <a className={className} href={item.url} target="_blank" rel="noopener noreferrer">
+    <a
+      className={className}
+      href={item.url}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       {content}
     </a>
   );
