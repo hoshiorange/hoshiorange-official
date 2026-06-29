@@ -41,8 +41,8 @@ export interface Vec2 {
  */
 export interface StageData {
   id: string;
+  /** 所属する章（world）の ID。階層は 2 段（world=章 → stage）。 */
   worldId: string;
-  chapterId: string;
   title: string;
   width: number;
   height: number;
@@ -53,6 +53,22 @@ export interface StageData {
   data: string;
   /** 章 / ワールド内での並び順（小さいほど先）。 */
   order?: number;
+  /**
+   * 公開済みか（M1）。true=公開 / false・undefined=下書き。
+   * 公開後は盤面ロック（メタのみ編集可・複製は可）。
+   */
+  published?: boolean;
+  /**
+   * 作成者が実際にクリアした操作手順（方向列）＝マリオメーカー方式の公開根拠（M1）。
+   * 手数は length で算出。フェーズ2 のサーバ再生検証にも使える。
+   */
+  authorMoves?: Direction[] | null;
+  /** 作成者ユーザーID（Supabase Auth の user_id）。M1。 */
+  createdBy?: string | null;
+  /** 作成日時（ISO 文字列・Supabase）。 */
+  createdAt?: string;
+  /** 更新日時（ISO 文字列・Supabase）。 */
+  updatedAt?: string;
 }
 
 /**

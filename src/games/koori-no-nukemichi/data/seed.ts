@@ -4,6 +4,7 @@
  *
  * 盤面テキストのタイル: 0=氷床 / 1=壁・岩 / 2=通常床。
  * スタート・ゴールは座標（startX/Y, goalX/Y）で管理する。
+ * 階層は 2 段（world=章 → stage）。
  *
  * 3 ステージで停止条件を一通り体験できるように設計:
  *   s1 縁での停止（(b)）
@@ -12,24 +13,17 @@
  */
 
 import type { StageData } from '../core/types';
-import type { ChapterSummary, WorldSummary } from './repository';
+import type { World } from './repository';
 
 const WORLD_ID = 'w1';
-const CHAPTER_ID = 'c1';
 
-const chapters: ChapterSummary[] = [
-  { id: CHAPTER_ID, worldId: WORLD_ID, title: 'はじまりのみち', order: 1 },
-];
-
-export const seedWorlds: WorldSummary[] = [
-  { id: WORLD_ID, title: 'こおりのもり', order: 1, chapters },
-];
+/** 章（world）。2 階層モデルの最上位。 */
+export const seedWorlds: World[] = [{ id: WORLD_ID, title: 'こおりのもり', order: 1, published: true }];
 
 export const seedStages: StageData[] = [
   {
     id: 's1',
     worldId: WORLD_ID,
-    chapterId: CHAPTER_ID,
     title: 'はじめのいっぽ',
     width: 5,
     height: 5,
@@ -40,11 +34,12 @@ export const seedStages: StageData[] = [
     // 全面氷。右へ滑って縁、下へ滑って縁＝ゴール。
     data: '00000,00000,00000,00000,00000',
     order: 1,
+    published: true,
+    authorMoves: ['right', 'down'],
   },
   {
     id: 's2',
     worldId: WORLD_ID,
-    chapterId: CHAPTER_ID,
     title: 'かべをたよりに',
     width: 5,
     height: 5,
@@ -55,11 +50,12 @@ export const seedStages: StageData[] = [
     // (0,2)=床 / (4,2)=壁。下→床で停止、右→壁の手前(=ゴール)で停止。
     data: '00000,00000,20001,00000,00000',
     order: 2,
+    published: true,
+    authorMoves: ['down', 'right'],
   },
   {
     id: 's3',
     worldId: WORLD_ID,
-    chapterId: CHAPTER_ID,
     title: 'まわりみち',
     width: 6,
     height: 6,
@@ -70,5 +66,7 @@ export const seedStages: StageData[] = [
     // (5,0)/(0,3)/(4,4)=壁。右→下→左 と壁を頼りに折れてゴールへ。
     data: '000001,000000,000000,100000,000010,000000',
     order: 3,
+    published: true,
+    authorMoves: ['right', 'down', 'left'],
   },
 ];
