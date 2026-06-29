@@ -34,9 +34,9 @@ const BASE = '/games/koori-no-nukemichi/placeholders';
 
 export const assetManifest: Record<ImageAssetKey, ImageAsset> & Record<AudioAssetKey, AudioAsset> = {
   // 画像系（M0 は color を使用）
-  ice: { kind: 'image', src: `${BASE}/ice.svg`, color: 0x7fb8e6 },
-  wall: { kind: 'image', src: `${BASE}/wall.svg`, color: 0x2a3358 },
-  floor: { kind: 'image', src: `${BASE}/floor.svg`, color: 0x49507a },
+  ice: { kind: 'image', src: `${BASE}/ice.svg`, color: 0x86d2f2 },
+  wall: { kind: 'image', src: `${BASE}/wall.svg`, color: 0x1b2138 },
+  floor: { kind: 'image', src: `${BASE}/floor.svg`, color: 0x2f8f7d },
   mascot: { kind: 'image', src: `${BASE}/mascot.svg`, color: 0xff8c2a },
   goal: { kind: 'image', src: `${BASE}/goal.svg`, color: 0xffd27f },
   background: { kind: 'image', src: `${BASE}/background.svg`, color: 0x060814 },

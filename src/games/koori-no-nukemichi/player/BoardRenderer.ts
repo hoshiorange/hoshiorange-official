@@ -159,13 +159,13 @@ export class BoardRenderer {
           // 床: 破線風の内枠で「滑らない」ことを示す。
           g.roundRect(px + size * 0.2, py + size * 0.2, size * 0.6, size * 0.6, r * 0.6).stroke({
             width: Math.max(2, this.cell * 0.04),
-            color: 0x8a92c8,
+            color: 0x5fc2ad,
             alpha: 0.7,
           });
         } else if (tile === Tile.Wall) {
           g.roundRect(px, py, size, size, r).stroke({
             width: Math.max(2, this.cell * 0.04),
-            color: 0x475089,
+            color: 0x39406a,
             alpha: 0.9,
           });
         }

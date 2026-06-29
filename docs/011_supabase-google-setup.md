@@ -165,6 +165,50 @@ Google ログインを使うため、Google 側で OAuth クライアントを�
 
 ---
 
+## トラブルシュート（本番有効化で実際にハマった点）
+
+> 本番（ref `ayohmfzssjhcziqsvoqn`）で有効化したときに詰まった点の記録です。同じ手順をやり直す際の参考に。
+
+### A. Google を有効化したのにログインできない（`Unsupported provider: provider is not enabled`）
+- **症状**: ログイン時に `400 "Unsupported provider: provider is not enabled"` が出る。
+- **原因**: ステップ 4 で Google の**トグルを ON にしても「Save」が効いていなかった**。
+  特に **Client ID / Client Secret の両方が未入力**だと、有効として保存されないことがある。
+- **対処**:
+  1. トグルを ON にする。
+  2. **Client ID と Client Secret を両方とも入力する**（片方だけだと保存されないことがある）。
+  3. 画面に表示される Callback URL（`https://<プロジェクトID>.supabase.co/auth/v1/callback`）を、
+     Google Cloud 側の「承認済みリダイレクト URI」に登録する。
+  4. **必ず「Save」ボタンを押す**（押し忘れに注意）。
+  - 保存が反映されたかは **Authentication → Logs** に「設定リロード（`reloading api with new configuration`）」
+    イベントが出ているかで判別できます。出ていなければ保存できていません。
+
+### B. ログイン後のリダイレクト先は「アクセスした URL（origin）」基準
+- ログイン後に戻ってくるコールバック URL は、アプリ側で**アクセス中の origin**
+  （`http://localhost:3000` など）＋ `/lab/koori-no-nukemichi/auth/callback` を使います。
+  **`NEXT_PUBLIC_SITE_URL` は OAuth のリダイレクトには使われません**（あれは OGP / sitemap 用）。
+- そのため、ステップ 4 の **Redirect URLs には「実際に開くポート」の URL を登録**してください。
+  - ローカルで `http://localhost:3000` を使うなら
+    `http://localhost:3000/lab/koori-no-nukemichi/auth/callback`（または `http://localhost:3000/**`）。
+  - dev サーバが別ポート（例 3001）で起動した場合は、そのポートの URL を登録するか、3000 で起動し直す。
+  - 本番ドメインが決まったら、本番分のコールバックも追加する。
+
+### C. `admins` への登録は「初回ログインの後」＋登録後はページをリロード
+- `admins` に登録する `user_id` は**初回 Google ログイン後**にしか発行されません（順番が大事。ステップ 5）。
+- `admins` に登録した直後は、**エディタ画面をリロード**しないと管理人判定（admin）が反映されません
+  （ログインした時点ではまだ未登録＝非 admin と判定されているため）。登録後は一度リロードしてください。
+
+### D. ステージ「公開」が失敗する（`stage.author_moves` の型不整合）
+- **症状**: 章は公開できるのに、**ステージの「公開」を押しても公開されない**（`published` が false のまま）。
+- **原因**: スキーマの `stage.author_moves` 列が `integer` 型なのに、アプリは公開根拠の操作手順を
+  **文字列**（例 `"RDLU"`）で保存しようとするため、公開更新の SQL が `22P02 invalid input syntax for type integer` で失敗します。
+- **対処**: 本番 DB で次の ALTER を実行（現状は全行 null のため非破壊・安全）し、`supabase/schema.sql`（正本）の同列も `text` に直します。
+  ```sql
+  alter table public.stage alter column author_moves type text using author_moves::text;
+  ```
+  → スキーマ正本の修正＋コミットは実装担当が別途対応します（詳細は `docs/014_koori-m1-honban-yuukouka.md`）。
+
+---
+
 ## 完了後の連絡について
 **全部そろってから一括で連絡する必要はありません。** 準備できた項目から順に、その都度
 **実装担当（私）に連絡**してください。特に以下が揃うと M1 を本格的に進められます。

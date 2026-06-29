@@ -56,7 +56,7 @@ create table if not exists public.stage (
   goalx          integer not null,
   goaly          integer not null,
   data           text not null,                       -- "111,101,121" 形式（1マス1文字・カンマ=行区切り）
-  author_moves   integer,                             -- 公開まで null（作成者がクリアした手数）
+  author_moves   text,                                -- 作成者のクリア手順を直列化した文字列（例 "RDLU"）。公開まで null
   published      boolean not null default false,      -- false→true 一方向（運用ルール。DB 制約は付けない）
   created_by     uuid references auth.users(id),
   created_at     timestamptz not null default now(),

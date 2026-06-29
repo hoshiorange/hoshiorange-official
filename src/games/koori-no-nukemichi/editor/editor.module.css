@@ -205,6 +205,7 @@
 }
 
 .grid {
+  position: relative;
   display: grid;
   width: 100%;
   gap: 2px;
@@ -240,13 +241,33 @@
   right: 0.15em;
   bottom: 0.05em;
 }
-.mascot {
+/* マスコットは単一の絶対配置レイヤー。位置(left/top)・サイズ(width/height)・
+   transition は EditorGrid 側が対象セルの実測値で設定する（gap/padding/border に依存しない）。
+   滑走は left/top の CSS トランジション（ease-out）で表現する。 */
+.mascotLayer {
   position: absolute;
+  left: 0;
+  top: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  pointer-events: none;
+  z-index: 2;
+  will-change: left, top;
+}
+.mascot {
   width: 58%;
   height: 58%;
   border-radius: 50%;
   background: radial-gradient(circle at 35% 30%, #ffd27f, #ff8c2a 70%);
   box-shadow: 0 0 10px rgba(255, 140, 42, 0.7);
+}
+
+/* 動きを抑える設定では滑走させず即時移動（インライン transition も上書き）。 */
+@media (prefers-reduced-motion: reduce) {
+  .mascotLayer {
+    transition: none !important;
+  }
 }
 
 .panel {

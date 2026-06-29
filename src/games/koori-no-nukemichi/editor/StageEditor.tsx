@@ -35,9 +35,9 @@ const TOOL_TILE: Record<'ice' | 'wall' | 'floor', TileCode> = {
   floor: Tile.Floor,
 };
 const SWATCH: Record<'ice' | 'wall' | 'floor', string> = {
-  ice: '#7fb8e6',
-  wall: '#2a3358',
-  floor: '#49507a',
+  ice: '#86d2f2',
+  wall: '#1b2138',
+  floor: '#2f8f7d',
 };
 
 export interface StageEditorProps {
@@ -213,7 +213,7 @@ export function StageEditor({ repo, worldId, stage, onBack, onChanged, onOpenSta
         });
       }
       setPublished(saved.published ?? false);
-      setInfo('保存しました（下書き）');
+      setInfo('保存しました');
       onChanged();
       return saved;
     } catch (e) {
@@ -424,7 +424,7 @@ export function StageEditor({ repo, worldId, stage, onBack, onChanged, onOpenSta
             </button>
             {!locked ? (
               <button type="button" className={styles.btn} onClick={saveDraft} disabled={busy}>
-                下書き保存
+                保存
               </button>
             ) : null}
           </div>
