@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- 仮素材: プレイヤー（ほしマスコット）。四芒星モチーフ。 -->
+  <g transform="translate(64 64)">
+    <path d="M0 -52 L13 -13 L52 0 L13 13 L0 52 L-13 13 L-52 0 L-13 -13 Z"
+          fill="#ff8c2a" stroke="#ffb066" stroke-width="3" stroke-linejoin="round"/>
+    <circle cx="0" cy="0" r="9" fill="#fff3e6"/>
+  </g>
+</svg>

@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- 仮素材: 氷床。実素材で差し替え可能。 -->
+  <rect x="4" y="4" width="120" height="120" rx="14" fill="#7fb8e6"/>
+  <rect x="4" y="4" width="120" height="120" rx="14" fill="url(#sheen)" opacity="0.6"/>
+  <line x1="24" y1="30" x2="58" y2="30" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.7"/>
+  <line x1="70" y1="92" x2="104" y2="92" stroke="#ffffff" stroke-width="4" stroke-linecap="round" opacity="0.5"/>
+  <defs>
+    <linearGradient id="sheen" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#ffffff" stop-opacity="0.55"/>
+      <stop offset="1" stop-color="#ffffff" stop-opacity="0"/>
+    </linearGradient>
+  </defs>
+</svg>

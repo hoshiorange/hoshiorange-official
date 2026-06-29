@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- 仮素材: 壁・岩。 -->
+  <rect x="2" y="2" width="124" height="124" rx="10" fill="#2a3358"/>
+  <rect x="2" y="2" width="124" height="124" rx="10" fill="none" stroke="#475089" stroke-width="4"/>
+  <path d="M30 86 L52 50 L74 78 L92 58 L100 96 Z" fill="#1b2142" opacity="0.8"/>
+</svg>
