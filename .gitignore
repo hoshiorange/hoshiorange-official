@@ -46,6 +46,10 @@ next-env.d.ts
 # claude code local state
 .claude/settings.local.json
 .claude/scheduled_tasks.lock
+.claude/worktrees/
+
+# playwright mcp（スクショ・スナップショット等の一時生成物）
+.playwright-mcp/
 
 # logs
 *.log
