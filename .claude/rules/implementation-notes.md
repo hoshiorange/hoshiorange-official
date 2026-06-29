@@ -59,7 +59,27 @@ docs/
   004_session-redesign.md
   005_refactor-structure.md
   006_twitcasting-status.md
+  007_youtube-live-status.md
+  008_lab-game-koori-and-section-reorder.md
+  009_vercel-analytics.md
+  010_koori-game-plan.md       ← こおりのぬけみち M0〜M2 計画（別エージェント作成）
+  011_supabase-google-setup.md ← ユーザー向け Supabase/Google 手順（別エージェント作成）
+  012_koori-game-m0.md         ← こおりのぬけみち M0 実装報告
+src/games/koori-no-nukemichi/  ← ゲーム本体（core 純TS / data / auth / assets / player Pixi）
+public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 ```
+
+## こおりのぬけみち ゲーム M0（012 / 氷床スライドパズル）
+- **目的**: Laboratory 配下のゲームを段階実装（M0 コア＋最小Pixi → M1 DB+エディタ → M2 完成+導線）。計画は `docs/010_koori-game-plan.md`、ユーザー手順は `docs/011_supabase-google-setup.md`、M0 報告は `docs/012`。
+- **配置**: 自己完結ディレクトリ `src/games/koori-no-nukemichi/`。`core/`(純TS, FW非依存) `data/`(リポジトリIF＋ローカルアダプタ) `auth/`(IF＋devスタブ) `assets/`(マニフェスト) `player/`(Pixi v8, クライアント専用)。仮素材は `public/games/koori-no-nukemichi/placeholders/`。
+- **コア（純TS）**: `types.ts`(タイル 0=氷/1=壁/2=床, Board, StageData) / `board.ts`(encode/decode "111,101,121"・盤外=壁扱い) / `slide.ts`(`computeSlide()`: 壁・縁・床で停止、ゴール停止のみクリア＝通過不可) / `game.ts`(`GameEngine`: move/undo(1手)/reset・手数(実移動のみ)・方向列)。決定的・Node/ブラウザ両対応。`selftest.ts` を `npx tsx` で実行（37 assert）。
+- **データ/認証**: `createStageRepository()` / `createAuthProvider()` は env(`NEXT_PUBLIC_SUPABASE_URL`)で実装を選ぶ設計。現状は `LocalStageRepository`(シード3ステージ) と `DevAuthProvider`(isAdmin=true)。**env 無しでも全機能動作**。Supabase/Google 実体は M1。
+- **プレイヤー（Pixi v8）**: `BoardRenderer.ts`(描画カプセル化, コア非依存) ＋ `GameApp.tsx`(読込→init→入力→状態) ＋ `KooriGame.tsx`(`next/dynamic ssr:false` ラッパー, Hero3D/ContactVisual と同方針)。キーボード(矢印/WASD)＋スワイプ＋D-pad、滑走 ease-out 補間、`animatingRef` で入力ロック、`prefers-reduced-motion` で即時移動、ミュートSFXフック(`useSfx`)。
+- **ルート**: プレビューは `src/app/lab/koori-no-nukemichi/m0/page.tsx`（全画面・夜テーマ固定・`robots:noindex`）。**既存 Coming Soon `/lab/koori-no-nukemichi` は不変**。本番入口差し替えは M2。
+- **依存**: `pixi.js@^8`(8.19.0) を追加。`@supabase/supabase-js` は M1。
+- **アセットマニフェスト**: `assets/manifest.ts` が論理名(ice/wall/floor/mascot/goal/background/sfx_slide/sfx_stop/sfx_clear)→仮素材パス＋M0暫定カラーをマップ。実素材は同パスにドロップ差し替え。
+- **検証**: `npx tsc --noEmit` / `npm run build`（env 無し, 全9ルート, /m0 は Pixi を dynamic 遅延ロードで First Load 約105kB）成功。Playwright で /m0 のクリア動作・コンソールエラー0件・Coming Soon 不変を確認。
+- **注意（ブランチ運用）**: 本機能は **main 基点の `feature/koori-no-nukemichi`**（vercel-analytics からは切らない）。docs 010/011 は別エージェントが同ブランチに先行コミット済み（連番衝突回避のため M0 報告は 012 を採番）。
 
 ## 3D / レイアウト再構成（004）
 - ページ構成を `Header → Hero → LatestActivity → LinkCards → Laboratory → Contact → Footer` に再整理。
