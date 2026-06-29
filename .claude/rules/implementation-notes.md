@@ -65,7 +65,9 @@ docs/
   010_koori-game-plan.md       ← こおりのぬけみち M0〜M2 計画（別エージェント作成）
   011_supabase-google-setup.md ← ユーザー向け Supabase/Google 手順（別エージェント作成）
   012_koori-game-m0.md         ← こおりのぬけみち M0 実装報告
-src/games/koori-no-nukemichi/  ← ゲーム本体（core 純TS / data / auth / assets / player Pixi）
+  013_koori-game-m1.md         ← こおりのぬけみち M1 実装報告（DB＋認証＋エディタ）
+supabase/schema.sql            ← こおりのぬけみち Supabase スキーマ＋RLS（M1）
+src/games/koori-no-nukemichi/  ← ゲーム本体（core 純TS / data / auth / editor DOM / assets / player Pixi）
 public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 ```
 
@@ -80,6 +82,21 @@ public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 - **アセットマニフェスト**: `assets/manifest.ts` が論理名(ice/wall/floor/mascot/goal/background/sfx_slide/sfx_stop/sfx_clear)→仮素材パス＋M0暫定カラーをマップ。実素材は同パスにドロップ差し替え。
 - **検証**: `npx tsc --noEmit` / `npm run build`（env 無し, 全9ルート, /m0 は Pixi を dynamic 遅延ロードで First Load 約105kB）成功。Playwright で /m0 のクリア動作・コンソールエラー0件・Coming Soon 不変を確認。
 - **注意（ブランチ運用）**: 本機能は **main 基点の `feature/koori-no-nukemichi`**（vercel-analytics からは切らない）。docs 010/011 は別エージェントが同ブランチに先行コミット済み（連番衝突回避のため M0 報告は 012 を採番）。
+
+## こおりのぬけみち ゲーム M1（013 / DB＋認証＋エディタ）
+- **目的**: M0 のローカル/devスタブ拡張点を実体（Supabase / Google OAuth）＋ステージ作成 UI（エディタ）に差し替える。報告は `docs/013`。コア（`core/`）は不変。
+- **データ階層 2階層化**: **world（＝章）→ stage** で確定（中間 chapter は撤廃）。`core/types.ts` の `StageData` を `worldId` 化＋ published / authorMoves / createdBy / createdAt / updatedAt / order を追加。
+- **Supabase スキーマ**（`supabase/schema.sql`・冪等）: `world(id,title,"order",published,...)` / `stage(id,world_id,order_in_world,title,width,height,startx,starty,goalx,goaly,data,author_moves,published,created_by,...)` / `admins(user_id)`。`is_admin()`（security definer）＋ RLS（公開行は anon 含め select 可、書き込みは admin のみ、admins は本人 select のみ・書き込み不可）。公開後ロック・published 一方向はアプリ運用で担保（DB 制約なし）。SQL Editor 貼り付け実行。
+- **データ層拡張**: `repository.ts` の `StageRepository` を章 CRUD ＋ ステージ CRUD（create/update/**publish**/delete/**duplicate**）に拡張。`LocalStageRepository`（インメモリ全実装）/ `SupabaseStageRepository`（列名は schema 一致・author_moves は "RDLU" 直列化・公開後は盤面パッチ無視）の2実装。`seed.ts` は 1章＋3ステージに2階層化。
+- **Supabase クライアント**（`supabaseClient.ts`）: `supabase-js` を**トップレベル import せず動的 import**（env 無しでは初期バンドルに含めない＝/m0 を太らせない）。env ガード＋ PKCE / persistSession / detectSessionInUrl のシングルトン。
+- **アダプタ選択**: `createStageRepository()` / `createAuthProvider()` が `hasSupabaseEnv()`（`NEXT_PUBLIC_SUPABASE_URL` ＋ `NEXT_PUBLIC_SUPABASE_ANON_KEY`）で Local/Dev↔Supabase を切替。**env 無しでも全機能動作**。
+- **認証**（`auth/supabaseAuth.ts`）: Google OAuth（`signInWithOAuth` PKCE・リダイレクト）。コールバックは `app/lab/koori-no-nukemichi/auth/callback/page.tsx` がクライアント側で `getSession()` を待って確定 → エディタへ `replace`（SPA 推奨フロー）。`isAdmin` は admins テーブルの本人 select で判定。
+- **DOM エディタ**（`editor/`・Pixi 非依存・CSS Modules）: `KooriEditor`（`next/dynamic ssr:false`）→ `EditorApp`（admin ガード／章一覧＋章 CRUD）→ `StageEditor`（タイル塗り・S/G 配置・リサイズ全クリア・テストプレイ・下書き保存／公開・公開後ロック／複製・削除）。`EditorGrid`（編集・テスト兼用 DOM グリッド）／`TestPlay`（core の `GameEngine` で実プレイ）。**マリオメーカー方式**＝作成者がテストプレイで実クリアして初めて公開解放（その方向列＝author_moves を保存。盤面を変えたら再テスト必須）。
+- **ルート**: エディタ `app/lab/koori-no-nukemichi/edit/page.tsx`（全画面・夜固定・noindex・一般導線からリンクしない）。**既存 Coming Soon `/lab/koori-no-nukemichi` と `/m0` は不変**。
+- **依存**: `@supabase/supabase-js@^2.108.2` を追加（M0 で保留していたもの）。
+- **統合**: 2 worktree（M1-code / M1-SQL, 782af53 基点）を ff-only マージ＋ cherry-pick で linear 統合。最終 HEAD `e2b7e79`。worktree・一時ブランチは後片付け済み。
+- **検証**: `npx tsc --noEmit`（要 `npm install` で supabase-js 取得）／`npm run build`（env 無し・全11ルート、/edit ≈2.16kB・/auth/callback ≈995B）／コア自己テスト 37 passed。dev/ライブ Supabase 接続は本番スキーマ未適用のため未実施。
+- **残課題**: 本番認証は Supabase 側で schema 適用＋自分の UID を admins 登録＋ Google プロバイダ設定＋ Vercel env（`NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY`）登録が揃って有効化。列名突き合わせの本番疎通は未検証。公開ステージをプレイヤーに繋ぐ導線・本番入口差し替えは M2。
 
 ## 3D / レイアウト再構成（004）
 - ページ構成を `Header → Hero → LatestActivity → LinkCards → Laboratory → Contact → Footer` に再整理。
