@@ -5,7 +5,7 @@
  */
 
 import type { StageData } from '../core/types';
-import type { ChapterSummary, StageRepository, StageSummary, WorldSummary } from './repository';
+import type { StageRepository, StageSummary, WorldSummary } from './repository';
 import { seedStages, seedWorlds } from './seed';
 
 function toSummary(stage: StageData): StageSummary {
