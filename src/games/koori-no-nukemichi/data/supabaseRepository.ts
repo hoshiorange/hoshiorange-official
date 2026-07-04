@@ -207,6 +207,25 @@ export class SupabaseStageRepository implements StageRepository {
   async createStage(input: CreateStageInput): Promise<StageData> {
     const c = await this.client();
     const { data: userData } = await c.auth.getUser();
+
+    // order 未指定なら同一章内の既存最大 order_in_world + 1 を採番する
+    // （Local 実装と挙動を揃える。DB 既定値 0 のままだと新規が全て 0 に潰れるのを防ぐ）。
+    let order = input.order;
+    if (order === undefined) {
+      const { data: maxRows, error: maxErr } = await c
+        .from('stage')
+        .select('order_in_world')
+        .eq('world_id', input.worldId)
+        .order('order_in_world', { ascending: false })
+        .limit(1);
+      if (maxErr) throw maxErr;
+      const maxOrder =
+        maxRows && maxRows.length > 0
+          ? (maxRows[0] as { order_in_world: number | null }).order_in_world ?? 0
+          : 0;
+      order = maxOrder + 1;
+    }
+
     const payload: Record<string, unknown> = {
       world_id: input.worldId,
       title: input.title,
@@ -217,11 +236,11 @@ export class SupabaseStageRepository implements StageRepository {
       goalx: input.goalX,
       goaly: input.goalY,
       data: input.data,
+      order_in_world: order,
       published: false,
       author_moves: null,
       created_by: userData.user?.id ?? null,
     };
-    if (input.order !== undefined) payload.order_in_world = input.order;
     const { data, error } = await c.from('stage').insert(payload).select(STAGE_COLS).single();
     if (error) throw error;
     return stageFromRow(data as StageRow);

@@ -7,11 +7,11 @@
  * - 全画面・夜テーマ固定の没入レイアウト（M2 の本実装の先行プロトタイプ）。
  */
 
-import { useCallback, useEffect, useRef, useState } from 'react';
+import { useCallback, useEffect, useRef, useState, type ReactNode } from 'react';
 import Link from 'next/link';
 import { Application } from 'pixi.js';
 import { GameEngine, type Direction, type StageData } from '../core';
-import { createStageRepository } from '../data';
+import { LocalStageRepository } from '../data';
 import { assetManifest } from '../assets/manifest';
 import { BoardRenderer } from './BoardRenderer';
 import { useSfx } from './useSfx';
@@ -24,6 +24,19 @@ const MAX_SLIDE_MS = 520;
 const SWIPE_THRESHOLD = 28;
 
 type Status = 'loading' | 'ready' | 'error';
+
+export interface GameAppProps {
+  /** 直接渡された場合はこの盤面を使う（GameShell から渡す）。 */
+  stage?: StageData;
+  /** stage 未指定時に読み込むステージ ID（/m0 既定 = s1）。 */
+  stageId?: string;
+  /** 戻る操作。未指定なら /#lab への Link にフォールバック（/m0 互換）。 */
+  onExit?: () => void;
+  /** クリア確定時に 1 回呼ばれる（クリア記録などに使う・任意）。 */
+  onCleared?: (stageId: string) => void;
+  /** 「次のステージ」操作。指定時のみクリア画面にボタンを出す。 */
+  onSelectNext?: () => void;
+}
 
 const KEY_TO_DIR: Record<string, Direction> = {
   ArrowUp: 'up',
@@ -40,15 +53,21 @@ function prefersReducedMotion(): boolean {
   return typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 }
 
-export default function GameApp({ stageId = FIRST_STAGE_ID }: { stageId?: string }) {
+export default function GameApp({
+  stage: stageProp,
+  stageId = FIRST_STAGE_ID,
+  onExit,
+  onCleared,
+  onSelectNext,
+}: GameAppProps) {
   const mountRef = useRef<HTMLDivElement | null>(null);
   const appRef = useRef<Application | null>(null);
   const rendererRef = useRef<BoardRenderer | null>(null);
   const engineRef = useRef<GameEngine | null>(null);
   const animatingRef = useRef(false);
 
-  const [status, setStatus] = useState<Status>('loading');
-  const [stage, setStage] = useState<StageData | null>(null);
+  const [status, setStatus] = useState<Status>(stageProp ? 'ready' : 'loading');
+  const [stage, setStage] = useState<StageData | null>(stageProp ?? null);
   const [moveCount, setMoveCount] = useState(0);
   const [cleared, setCleared] = useState(false);
   const [canUndo, setCanUndo] = useState(false);
@@ -56,11 +75,19 @@ export default function GameApp({ stageId = FIRST_STAGE_ID }: { stageId?: string
 
   const { play } = useSfx(); // M0 既定ミュート
 
-  // 1) リポジトリ経由でステージを読み込む。
+  // 1) ステージを用意する。stage が直接渡されたらそれを使い、
+  //    無ければ stageId でリポジトリから読み込む（/m0 互換）。
   useEffect(() => {
+    if (stageProp) {
+      setStage(stageProp);
+      setStatus('ready');
+      return;
+    }
     let cancelled = false;
     setStatus('loading');
-    createStageRepository()
+    // /m0 は M0 デモ用の固定シードを使う（env の有無に依存しない）。
+    // GameShell（/play）が盤面を直接渡すケースは上の stageProp 分岐で処理済み。
+    new LocalStageRepository()
       .getStage(stageId)
       .then((s) => {
         if (cancelled) return;
@@ -77,7 +104,7 @@ export default function GameApp({ stageId = FIRST_STAGE_ID }: { stageId?: string
     return () => {
       cancelled = true;
     };
-  }, [stageId]);
+  }, [stageId, stageProp]);
 
   // 2) ステージ確定後に Pixi を初期化（クライアント専用）。
   useEffect(() => {
@@ -169,12 +196,13 @@ export default function GameApp({ stageId = FIRST_STAGE_ID }: { stageId?: string
         if (outcome.cleared) {
           setCleared(true);
           play('sfx_clear');
+          onCleared?.(engine.stage.id);
         } else {
           play('sfx_stop');
         }
       });
     },
-    [play],
+    [play, onCleared],
   );
 
   // キーボード（矢印 / WASD）。
@@ -240,12 +268,27 @@ export default function GameApp({ stageId = FIRST_STAGE_ID }: { stageId?: string
     setCanUndo(false);
   }, []);
 
+  // 戻る操作: onExit があればボタン、無ければ /#lab への Link（/m0 互換）。
+  const backControl = (className: string, children: ReactNode): ReactNode =>
+    onExit ? (
+      <button type="button" className={className} onClick={onExit}>
+        {children}
+      </button>
+    ) : (
+      <Link className={className} href="/#lab">
+        {children}
+      </Link>
+    );
+
   return (
     <div className={styles.root}>
       <header className={styles.topbar}>
-        <Link className={styles.back} href="/#lab">
-          <span aria-hidden="true">←</span> もどる
-        </Link>
+        {backControl(
+          styles.back,
+          <>
+            <span aria-hidden="true">←</span> もどる
+          </>,
+        )}
         <h1 className={styles.title}>
           こおりのぬけみち
           {stage ? <span className={styles.stageName}>{stage.title}</span> : null}
@@ -331,9 +374,7 @@ export default function GameApp({ stageId = FIRST_STAGE_ID }: { stageId?: string
         <div className={styles.overlay}>
           <div className={styles.card}>
             <p className={styles.cardTitle}>ステージを読み込めませんでした</p>
-            <Link className={styles.primaryBtn} href="/#lab">
-              もどる
-            </Link>
+            {backControl(styles.primaryBtn, 'もどる')}
           </div>
         </div>
       ) : null}
@@ -345,12 +386,19 @@ export default function GameApp({ stageId = FIRST_STAGE_ID }: { stageId?: string
             <p className={styles.cardTitle}>クリア！</p>
             <p className={styles.cardSub}>{moveCount} 手でゴール</p>
             <div className={styles.cardActions}>
-              <button type="button" className={styles.primaryBtn} onClick={handleReset}>
+              {onSelectNext ? (
+                <button type="button" className={styles.primaryBtn} onClick={onSelectNext}>
+                  次のステージ
+                </button>
+              ) : null}
+              <button
+                type="button"
+                className={onSelectNext ? styles.ghostBtn : styles.primaryBtn}
+                onClick={handleReset}
+              >
                 もう一度
               </button>
-              <Link className={styles.ghostBtn} href="/#lab">
-                もどる
-              </Link>
+              {backControl(styles.ghostBtn, 'もどる')}
             </div>
           </div>
         </div>

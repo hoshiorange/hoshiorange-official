@@ -109,6 +109,22 @@ public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 - **ハマりどころ（要点）**: (A) Google プロバイダはトグル ON だけでなく **Client ID/Secret 両方入力＋Save 必須**（Auth ログの「設定リロード」で保存反映を判別）。(B) OAuth リダイレクトは `window.location.origin` 基準で、**`NEXT_PUBLIC_SITE_URL` は使われない** → Supabase の Redirect URLs に**実 origin/ポート**のコールバック（`.../lab/koori-no-nukemichi/auth/callback`）を登録。(C) admins 登録は**初回ログイン後**かつ登録後は**エディタをリロード**しないと admin 判定が更新されない。(D) dev は既定 3000、埋まっていると 3001 が自動選択されるので Redirect URLs は実ポートに合わせる。詳細は `docs/011` のトラブルシュート節にも追記。
 - **Vercel 残作業**: Vercel に `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` 登録。Supabase の Redirect URLs / Site URL を本番ドメインに設定。公開ステージのプレイヤー導線・本番入口差し替えは M2。
 - **M2 要件メモ（記録のみ・未実装）**: 認証ユーザの**表示名 display_name 保存**。用途は公開ステージの作者名表示（anon からも見せたい／現状 `stage.created_by` は UID のみ）。第一候補＝`profiles` テーブル新設（`user_id`→`display_name`、`auth.users` 作成時トリガで自動投入、anon は display_name select 可、プロフィール拡張も載せやすい＝Supabase 標準）。代替＝`stage.created_by_name` 非正規化（最小だが名前変更追従せず）。最終方式は M2 着手時に確定。詳細は `docs/014` の「M2 要件メモ」。
+
+## こおりのぬけみち M2 P2（遊べる導線・章解放・30ステージ）
+- **目的**: 公開ステージを一般ユーザーが遊べる `/play` ルートを新設。M1 の公開ブロッカー（author_moves 型不整合）を修正し、本番 DB に 3 章 30 ステージを投入。
+- **新ルート**: `src/app/lab/koori-no-nukemichi/play/page.tsx`（全画面・夜固定・noindex）。`KooriPlay`（`next/dynamic ssr:false` ラッパー）→ `GameShell`（章選択→ステージ選択→プレイ遷移）。**既存 Coming Soon・/m0・/edit は不変**。本番入口差し替え（P7）はユーザー確認後。
+- **GameShell** (`player/GameShell.tsx` + `GameShell.module.css`): worldSelect → stageSelect → play の 3 状態を内部 state で管理。公開データのみ取得（`listWorlds(false)` / `listStages(worldId, false)`）。プレイ中は `GameApp` に `stage` / `onExit` / `onCleared` / `onSelectNext` を渡して委譲。
+- **WorldSelect** (`player/WorldSelect.tsx`): 章ボタン一覧。各章の `locked`・`clearedCount`・`total` を受け取りロック表示・進捗表示。
+- **StageSelect** (`player/StageSelect.tsx`): ステージボタン一覧。クリア済みステージに ✓ 印。一覧内 index で選択を返す（次ステージ遷移に使用）。
+- **progress.ts** (`player/progress.ts`): クリア済みステージ id を `localStorage`（キー `koori-no-nukemichi:cleared`）に永続化。`loadClearedIds()` / `markCleared(stageId)` の 2 API。SSR（window 不在）・プライベートモード（保存失敗）を安全にガード。
+- **章解放判定**: 第 1 章は常時解放。直前章の公開ステージを全クリアで次章が解放（`GameShell` 内 useMemo で算出）。`WorldSelect` はロック中の章を `disabled` + くすみ表示。
+- **GameApp 汎用化** (`player/GameApp.tsx`): `stage?: StageData`（直接渡し）/ `stageId?: string`（ID 指定・/m0 互換）のどちらでも動作する props に変更。`onExit` 未指定時は `/#lab` への Link にフォールバック（/m0 後方互換）。`onCleared(stageId)` / `onSelectNext` を追加し GameShell と連携。
+- **/m0 の env 非依存化**: M1 前は `createStageRepository()`（env で分岐）を使っていたが、env 有時に Supabase リポジトリを呼び出し存在しないステージ ID `s1` への 400 エラーが発生していた。`/m0` の `GameApp` からは `createStageRepository` を外し `LocalStageRepository` 直接使用に変更（env の有無に関係なくシードの `s1` を常に参照）。
+- **supabaseRepository の order 自動採番**: M1 の `createStage` は `order_in_world` 未指定で 0 固定になる問題があった。章内の既存最大 `order_in_world + 1` を採番するロジックを追加（`LocalStageRepository` との挙動統一）。
+- **本番 DB（3章 30ステージ投入）**: 第1層「つららの回廊」（4×4〜5×5, 易〜中）/ 第2層「氷結の迷宮」（5×5〜6×6, 中〜難）/ 第3層「極氷の試練」（6×6〜7×7, 難）各 10 ステージ。第3層は開放盤・唯一解（最短一意＋近接別解なし・avgSlide ≈ 3.2〜5.1）。管理人 UID `6b27d4ed-...` で全ステージを公開済み。
+- **ステージ生成スクリプト** (`scripts/koori-generate-stages.ts` / `koori-emit-sql.ts` / `koori-generate-chapter3.ts` / `koori-emit-chapter3-sql.ts`): 章 1・2 と章 3 で別ジェネレータ（難易度方針の違い）。`npx tsx` で実行、SQL を stdout に吐いて Supabase SQL Editor に貼り付け。`koori-calibrate.ts`（構文エラーの検証用使い捨て）は削除済み。
+- **検証**: `npx tsc --noEmit` 0 エラー。
+- **残課題**: アート差し込み（仮素材 SVG 使用中）、`?s=<stageId>` 直行受け口（ディープリンク）、Coming Soon 正式置換（P7・本番入口差し替え）、章解放の本番 3 章実機確認。
 - ページ構成を `Header → Hero → LatestActivity → LinkCards → Laboratory → Contact → Footer` に再整理。
 - React Three Fiber 基盤を導入（three / @react-three/fiber / @react-three/drei / @react-three/postprocessing / @types/three）。`useReducedMotion` で動きを抑制可能。
 - Hero に案A（ロゴ＋軌道）の `HeroVisual` を、Contact に案B（光る星）の `ContactVisual` を配置。（比較用 `/hero3d-preview` ページと統合シーン `HeroScene3D` は 005 で削除。）
