@@ -16,10 +16,11 @@ export function Footer() {
         </div>
 
         <nav aria-label="フッターナビゲーション" className={styles.nav}>
-          <a href="#links">Links</a>
-          <a href="#lab">Laboratory</a>
-          <a href="#latest">Streaming</a>
-          <a href="#contact">Contact</a>
+          <a href="/#links">Links</a>
+          <a href="/#lab">Laboratory</a>
+          <a href="/blog">Blog</a>
+          <a href="/#latest">Streaming</a>
+          <a href="/#contact">Contact</a>
         </nav>
 
         <p className={styles.copy}>
