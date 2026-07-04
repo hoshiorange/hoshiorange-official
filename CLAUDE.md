@@ -7,7 +7,7 @@ hoshiorange の公式ハブサイト。各 SNS（X / YouTube 等）・ブログ�
 |------|------|
 | 種別 | 個人公式サイト / リンクハブ |
 | 技術スタック | Next.js + TypeScript + CSS Modules（フロントエンドのみ、Tailwind は使わない） |
-| バックエンド/DB | 当面なし（必要になったら検討） |
+| バックエンド/DB | Supabase（こおりのぬけみち で採用済み。今後の増設機能でも利用） |
 | デプロイ | Vercel |
 | ドメイン | 未取得（取得予定） |
 | リポジトリ構成 | 単一リポジトリ |
@@ -15,21 +15,20 @@ hoshiorange の公式ハブサイト。各 SNS（X / YouTube 等）・ブログ�
 「ぱっと作ってぱっと公開」を優先。追加・改修しやすい構造にしておく。
 
 ## Git ワークフロー
-- `main` への直接コミット・プッシュは原則禁止
-- feature ブランチで作業し、PR 経由で `main` にマージ
+- ブランチ構成: `main`＝本番（Vercel Production）／`develop`＝統合ブランチ
+- `main`・`develop` への直接コミット・プッシュは禁止
+- feature ブランチは `develop` から切って作業し、PR は `develop` 宛てに作成する
 - ブランチ命名規則: `feature/{タスク名}` （短く分かりやすく）
-- マージはユーザーが承認して行う
 - マージ操作は Claude／エージェントが代行せず、**ユーザーが手動で行う**。マージ方式は **squash merge** を用いる。
-- PR が main にマージされたら、ローカルを `main` に切り替えて `git pull` で最新化し、マージ済みの feature ブランチはローカル・リモートとも削除する。次の作業は最新の main から新しい feature ブランチを切って始める。
+- リリース（`develop` → `main` の PR）はユーザーが判断・実施する
+- PR が develop にマージされたら、ローカルを `develop` に切り替えて `git pull` で最新化し、マージ済みの feature ブランチはローカル・リモートとも削除する。次の作業は最新の develop から新しい feature ブランチを切って始める。
 
 ## ドキュメント管理ルール
-- 作業のたびに `docs/NNN_作業名.md` を作成する（NNN は 3 桁の連番）
-- ドキュメントには「実施プラン（チェックボックス）」と「完了報告」を含める
-- 作業中は逐一チェックボックスを更新し、完了後に完了報告を書く
+- グローバル CLAUDE.md の作業ドキュメント運用を必須とする（作業のたびに `C:\git\note\worklog\hoshiorange-official\YYYY-MM-DD_作業名.md` を作成・更新）
+- 旧 docs/NNN（001〜014）は Obsidian Vault（`worklog/hoshiorange-official/YYYY-MM-DD_NNN_作業名.md`）へ移行済みで、リポジトリからは削除した。本文中の「docs/NNN」参照は Vault の同名ファイルを指す
 
 ## PR 作成時の注意
-- MCP ツール (`mcp__github__create_pull_request`) の body パラメータに `\n` エスケープシーケンスを使わないこと
-- 実際の改行文字を使うか、`gh pr create` コマンドで HEREDOC を使う
+- body に関する共通注意（`\n` エスケープ禁止）はグローバル CLAUDE.md を参照
 
 ## チーム構成
 
@@ -60,12 +59,8 @@ Teams 機能を使う場合、以下の4名体制で構成する。
 - 各担当は自分の担当領域の状況をしっかり把握し、記憶ファイルに記録すること
 - 記憶ファイルは作業のたびに最新状態に更新すること
 - 他の担当の記憶ファイルも参照して、横断的な整合性を保つこと
-- 日本語で応答すること
 
 ## 環境情報
 - OS: Windows 11
 - Shell: PowerShell（メイン） / Bash も利用可
 - Node.js: Next.js 対応の LTS バージョン
-
-## MCP サーバー注意事項
-- `claude mcp add` は Git Bash で実行すると引数が消える。必ず **PowerShell** で実行すること
