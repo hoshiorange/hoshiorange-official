@@ -52,21 +52,6 @@ src/
   types/
     youtube.ts
     twitcasting.ts
-docs/
-  001_initial-setup.md
-  002_about-into-hero.md
-  003_hero-official-hub.md
-  004_session-redesign.md
-  005_refactor-structure.md
-  006_twitcasting-status.md
-  007_youtube-live-status.md
-  008_lab-game-koori-and-section-reorder.md
-  009_vercel-analytics.md
-  010_koori-game-plan.md       ← こおりのぬけみち M0〜M2 計画（別エージェント作成）
-  011_supabase-google-setup.md ← ユーザー向け Supabase/Google 手順（別エージェント作成）
-  012_koori-game-m0.md         ← こおりのぬけみち M0 実装報告
-  013_koori-game-m1.md         ← こおりのぬけみち M1 実装報告（DB＋認証＋エディタ）
-  014_koori-m1-honban-yuukouka.md ← こおりのぬけみち M1 本番有効化・検証（schema適用/Google OAuth/admins登録）
 supabase/schema.sql            ← こおりのぬけみち Supabase スキーマ＋RLS（M1）
 src/games/koori-no-nukemichi/  ← ゲーム本体（core 純TS / data / auth / editor DOM / assets / player Pixi）
 public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
