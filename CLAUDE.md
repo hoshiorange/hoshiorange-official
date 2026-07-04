@@ -21,6 +21,7 @@ hoshiorange の公式ハブサイト。各 SNS（X / YouTube 等）・ブログ�
 - ブランチ命名規則: `feature/{タスク名}` （短く分かりやすく）
 - マージ操作は Claude／エージェントが代行せず、**ユーザーが手動で行う**。マージ方式は **squash merge** を用いる。
 - リリース（`develop` → `main` の PR）はユーザーが判断・実施する
+- **記事ファストレーン**: ブログ記事（`content/` 配下のみの変更）は `post/{記事slug}` ブランチ → `main` 直接 PR で公開してよい。マージ後は main を develop に取り込んで同期する（/after-merge が対応）
 - PR が develop にマージされたら、ローカルを `develop` に切り替えて `git pull` で最新化し、マージ済みの feature ブランチはローカル・リモートとも削除する。次の作業は最新の develop から新しい feature ブランチを切って始める。
 
 ## ドキュメント管理ルール

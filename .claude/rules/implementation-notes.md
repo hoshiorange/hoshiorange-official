@@ -27,6 +27,9 @@ src/
     globals.css          ← リセット + CSS 変数（:root と [data-theme='light']）
     icon.svg             ← favicon（Next.js が自動認識）
     sitemap.ts / robots.ts / opengraph-image.tsx (next/og, edge runtime)
+    blog/                ← ブログ一覧 + [slug] 記事（SSG、content/blog/*.md が入力）
+    lp/[slug]/           ← プロダクト候補 LP（SSG、src/data/lp.ts が入力）
+    feed.xml/route.ts    ← ブログ RSS 2.0（force-static）
   components/
     Header/              ← ロゴ + アンカーナビ + ThemeToggle、スクロールで半透明化、モバイルメニュー
     Hero/                ← タイトル「hoshiorange-official」(シック) + リード文 + CTA(SNS=#links / 制作物=#lab) + 左右2カラム + HeroVisual(案A 3D)
@@ -44,15 +47,21 @@ src/
     ThemeToggle/         ← MUI アイコン化、選択中表現を改善
     HoshiLogo/           ← SVG 直書き
     Section/             ← SectionHeading（共通見出し）+ Section.module.css（.sectionFrame 共通枠）
+    Lp/                  ← LP 用クライアント部品（LpAnalytics=view計測 / LpCtaButton / LpSignupForm）
   data/
-    profile.ts / links.ts / labs.ts  ← 文面・リンク一覧・制作物一覧を一箇所で管理
+    profile.ts / links.ts / labs.ts / lp.ts  ← 文面・リンク・制作物・LP候補を一箇所で管理
   lib/
     youtube.ts            ← Data API v3 呼び出し（環境変数不在時は { ok: false } を返す）
     twitcasting.ts        ← API v2 配信状況取得。認証 3 段（Bearer ACCESS_TOKEN 優先 → Basic ClientID/Secret → 無ければ { ok: false }）。is_live / current_live / movies
+    blog.ts               ← content/blog の読込・frontmatter検証・Markdown→HTML（unified/remark/rehype、サーバー専用）
+    supabaseBrowser.ts    ← サイト共通 Supabase クライアント（動的import・env無しはnull、認証なし）
+    lpTracking.ts         ← LP 3段ファネル計測＋事前登録送信（クライアント専用）
   types/
     youtube.ts
     twitcasting.ts
+content/blog/*.md              ← ブログ記事（frontmatter: title/description/date/tags/published/sourceUrl）
 supabase/schema.sql            ← こおりのぬけみち Supabase スキーマ＋RLS（M1）
+supabase/lp-schema.sql         ← LP 計測・事前登録スキーマ＋RLS（適用済み）
 src/games/koori-no-nukemichi/  ← ゲーム本体（core 純TS / data / auth / editor DOM / assets / player Pixi）
 public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 ```
@@ -177,6 +186,16 @@ public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 ## ビルド／開発
 - `npm install` → `npm run dev`（http://localhost:3000）
 - `npm run build` 動作確認済み（環境変数なしでも成功）
+
+## ブログ＋LP＋計測基盤（2026-07-04）
+- **ブログ**: `content/blog/*.md`（frontmatter 必須: title/description/date。published:false で下書き、sourceUrl で Zenn 転載表記）→ `/blog` 一覧・`/blog/[slug]`（SSG・dynamicParams=false）。GFM＋シンタックスハイライト（rehype-highlight, github-dark）。SEO: 記事別 OGP／JSON-LD（BlogPosting）／sitemap／RSS `/feed.xml`。記事公開は `post/` ブランチ → main 直接 PR のファストレーン（CLAUDE.md 参照）
+- **LP**: `src/data/lp.ts` の配列に足すと `/lp/[slug]` が増える（SSG）。初期3候補: stream-buddy / ai-digest / ai-stretch（文言はドラフト、ユーザーレビューで差し替え）。index 許可・sitemap 掲載
+- **計測**: 3段ファネル view / cta_click / signup ＋ UTM（sessionStorage 引き継ぎ）＋匿名訪問者ID（localStorage `hoshiorange-lp-visitor`）→ Supabase `lp_event`。事前登録は `lp_signup`（product+email ユニーク、重複は 23505 を「登録済み」表示に変換）。env 無しでは計測 no-op・LP 表示は正常
+- **Supabase**: `supabase/lp-schema.sql`（冪等）を本番 ref ayohmfzssjhcziqsvoqn に `lp_funnel_schema` として適用済み。RLS: anon/authenticated insert のみ・select は is_admin() のみ・update/delete 不可。advisors ERROR 0（insert 開放 WARN は設計意図）
+- **判定基準**: 登録5人 or ユニーククリック50超で開発 GO（worklog 個人開発/2026-07-04_月1万円プロダクト検証計画）
+- **依存追加**: gray-matter / unified / remark-parse / remark-gfm / remark-rehype / rehype-stringify / rehype-slug / rehype-highlight
+- **ナビ**: Header/Footer のアンカーを `/#...` 形式に変更し Blog を追加（ブログ等の別ページからも機能させるため）
+- **検証**: tsc / build（全18ルート）/ Playwright 実操作（ファネル4 POST 全部 201・重複表示・console error 0）。テストデータは truncate 済み
 
 ## 作業ルール
 - `main`・`develop` への直接コミット・プッシュ禁止（feature ブランチは develop から切り、PR は develop 宛て）
