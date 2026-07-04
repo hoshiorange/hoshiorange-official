@@ -194,12 +194,12 @@ public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 - `npm run build` 動作確認済み（環境変数なしでも成功）
 
 ## 作業ルール
-- `main` への直接コミット・プッシュ禁止
-- 作業のたびに `docs/NNN_作業名.md` を作成
+- `main`・`develop` への直接コミット・プッシュ禁止（feature ブランチは develop から切り、PR は develop 宛て）
+- 作業のたびに worklog（`C:\git\note\worklog\hoshiorange-official\YYYY-MM-DD_作業名.md`）を作成・更新（旧 docs/NNN は廃止）
 - 仕様変更・追加実装の都度このファイルを更新
 
 ## マージ後の定例フロー
-- PR が main にマージされたら、`main` へ切替 → `git pull` で最新化 → マージ済み feature ブランチをローカル・リモートとも削除 → 次の作業は最新 main から新しい feature ブランチを作成して開始する。
+- PR が develop にマージされたら、`develop` へ切替 → `git pull` で最新化 → マージ済み feature ブランチをローカル・リモートとも削除 → 次の作業は最新 develop から新しい feature ブランチを作成して開始する。リリース（develop → main の PR）はユーザーが判断・実施する。
 
 ## 残課題（コンテンツ／コンフィグ系）
 - Hero / Contact の文面差し替え（コード内 `{/* TODO: 文面を差し替える */}` 参照。About は廃止済）
