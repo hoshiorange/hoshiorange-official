@@ -59,9 +59,72 @@ docs/
   004_session-redesign.md
   005_refactor-structure.md
   006_twitcasting-status.md
+  007_youtube-live-status.md
+  008_lab-game-koori-and-section-reorder.md
+  009_vercel-analytics.md
+  010_koori-game-plan.md       ← こおりのぬけみち M0〜M2 計画（別エージェント作成）
+  011_supabase-google-setup.md ← ユーザー向け Supabase/Google 手順（別エージェント作成）
+  012_koori-game-m0.md         ← こおりのぬけみち M0 実装報告
+  013_koori-game-m1.md         ← こおりのぬけみち M1 実装報告（DB＋認証＋エディタ）
+  014_koori-m1-honban-yuukouka.md ← こおりのぬけみち M1 本番有効化・検証（schema適用/Google OAuth/admins登録）
+supabase/schema.sql            ← こおりのぬけみち Supabase スキーマ＋RLS（M1）
+src/games/koori-no-nukemichi/  ← ゲーム本体（core 純TS / data / auth / editor DOM / assets / player Pixi）
+public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 ```
 
-## 3D / レイアウト再構成（004）
+## こおりのぬけみち ゲーム M0（012 / 氷床スライドパズル）
+- **目的**: Laboratory 配下のゲームを段階実装（M0 コア＋最小Pixi → M1 DB+エディタ → M2 完成+導線）。計画は `docs/010_koori-game-plan.md`、ユーザー手順は `docs/011_supabase-google-setup.md`、M0 報告は `docs/012`。
+- **配置**: 自己完結ディレクトリ `src/games/koori-no-nukemichi/`。`core/`(純TS, FW非依存) `data/`(リポジトリIF＋ローカルアダプタ) `auth/`(IF＋devスタブ) `assets/`(マニフェスト) `player/`(Pixi v8, クライアント専用)。仮素材は `public/games/koori-no-nukemichi/placeholders/`。
+- **コア（純TS）**: `types.ts`(タイル 0=氷/1=壁/2=床, Board, StageData) / `board.ts`(encode/decode "111,101,121"・盤外=壁扱い) / `slide.ts`(`computeSlide()`: 壁・縁・床で停止、ゴール停止のみクリア＝通過不可) / `game.ts`(`GameEngine`: move/undo(1手)/reset・手数(実移動のみ)・方向列)。決定的・Node/ブラウザ両対応。`selftest.ts` を `npx tsx` で実行（37 assert）。
+- **データ/認証**: `createStageRepository()` / `createAuthProvider()` は env(`NEXT_PUBLIC_SUPABASE_URL`)で実装を選ぶ設計。現状は `LocalStageRepository`(シード3ステージ) と `DevAuthProvider`(isAdmin=true)。**env 無しでも全機能動作**。Supabase/Google 実体は M1。
+- **プレイヤー（Pixi v8）**: `BoardRenderer.ts`(描画カプセル化, コア非依存) ＋ `GameApp.tsx`(読込→init→入力→状態) ＋ `KooriGame.tsx`(`next/dynamic ssr:false` ラッパー, Hero3D/ContactVisual と同方針)。キーボード(矢印/WASD)＋スワイプ＋D-pad、滑走 ease-out 補間、`animatingRef` で入力ロック、`prefers-reduced-motion` で即時移動、ミュートSFXフック(`useSfx`)。
+- **ルート**: プレビューは `src/app/lab/koori-no-nukemichi/m0/page.tsx`（全画面・夜テーマ固定・`robots:noindex`）。**既存 Coming Soon `/lab/koori-no-nukemichi` は不変**。本番入口差し替えは M2。
+- **依存**: `pixi.js@^8`(8.19.0) を追加。`@supabase/supabase-js` は M1。
+- **アセットマニフェスト**: `assets/manifest.ts` が論理名(ice/wall/floor/mascot/goal/background/sfx_slide/sfx_stop/sfx_clear)→仮素材パス＋M0暫定カラーをマップ。実素材は同パスにドロップ差し替え。
+- **検証**: `npx tsc --noEmit` / `npm run build`（env 無し, 全9ルート, /m0 は Pixi を dynamic 遅延ロードで First Load 約105kB）成功。Playwright で /m0 のクリア動作・コンソールエラー0件・Coming Soon 不変を確認。
+- **注意（ブランチ運用）**: 本機能は **main 基点の `feature/koori-no-nukemichi`**（vercel-analytics からは切らない）。docs 010/011 は別エージェントが同ブランチに先行コミット済み（連番衝突回避のため M0 報告は 012 を採番）。
+
+## こおりのぬけみち ゲーム M1（013 / DB＋認証＋エディタ）
+- **目的**: M0 のローカル/devスタブ拡張点を実体（Supabase / Google OAuth）＋ステージ作成 UI（エディタ）に差し替える。報告は `docs/013`。コア（`core/`）は不変。
+- **データ階層 2階層化**: **world（＝章）→ stage** で確定（中間 chapter は撤廃）。`core/types.ts` の `StageData` を `worldId` 化＋ published / authorMoves / createdBy / createdAt / updatedAt / order を追加。
+- **Supabase スキーマ**（`supabase/schema.sql`・冪等）: `world(id,title,"order",published,...)` / `stage(id,world_id,order_in_world,title,width,height,startx,starty,goalx,goaly,data,author_moves,published,created_by,...)` / `admins(user_id)`。`is_admin()`（security definer）＋ RLS（公開行は anon 含め select 可、書き込みは admin のみ、admins は本人 select のみ・書き込み不可）。公開後ロック・published 一方向はアプリ運用で担保（DB 制約なし）。SQL Editor 貼り付け実行。
+- **データ層拡張**: `repository.ts` の `StageRepository` を章 CRUD ＋ ステージ CRUD（create/update/**publish**/delete/**duplicate**）に拡張。`LocalStageRepository`（インメモリ全実装）/ `SupabaseStageRepository`（列名は schema 一致・author_moves は "RDLU" 直列化・公開後は盤面パッチ無視）の2実装。`seed.ts` は 1章＋3ステージに2階層化。
+- **Supabase クライアント**（`supabaseClient.ts`）: `supabase-js` を**トップレベル import せず動的 import**（env 無しでは初期バンドルに含めない＝/m0 を太らせない）。env ガード＋ PKCE / persistSession / detectSessionInUrl のシングルトン。
+- **アダプタ選択**: `createStageRepository()` / `createAuthProvider()` が `hasSupabaseEnv()`（`NEXT_PUBLIC_SUPABASE_URL` ＋ `NEXT_PUBLIC_SUPABASE_ANON_KEY`）で Local/Dev↔Supabase を切替。**env 無しでも全機能動作**。
+- **認証**（`auth/supabaseAuth.ts`）: Google OAuth（`signInWithOAuth` PKCE・リダイレクト）。コールバックは `app/lab/koori-no-nukemichi/auth/callback/page.tsx` がクライアント側で `getSession()` を待って確定 → エディタへ `replace`（SPA 推奨フロー）。`isAdmin` は admins テーブルの本人 select で判定。
+- **DOM エディタ**（`editor/`・Pixi 非依存・CSS Modules）: `KooriEditor`（`next/dynamic ssr:false`）→ `EditorApp`（admin ガード／章一覧＋章 CRUD）→ `StageEditor`（タイル塗り・S/G 配置・リサイズ全クリア・テストプレイ・下書き保存／公開・公開後ロック／複製・削除）。`EditorGrid`（編集・テスト兼用 DOM グリッド）／`TestPlay`（core の `GameEngine` で実プレイ）。**マリオメーカー方式**＝作成者がテストプレイで実クリアして初めて公開解放（その方向列＝author_moves を保存。盤面を変えたら再テスト必須）。
+- **ルート**: エディタ `app/lab/koori-no-nukemichi/edit/page.tsx`（全画面・夜固定・noindex・一般導線からリンクしない）。**既存 Coming Soon `/lab/koori-no-nukemichi` と `/m0` は不変**。
+- **依存**: `@supabase/supabase-js@^2.108.2` を追加（M0 で保留していたもの）。
+- **統合**: 2 worktree（M1-code / M1-SQL, 782af53 基点）を ff-only マージ＋ cherry-pick で linear 統合。最終 HEAD `e2b7e79`。worktree・一時ブランチは後片付け済み。
+- **検証**: `npx tsc --noEmit`（要 `npm install` で supabase-js 取得）／`npm run build`（env 無し・全11ルート、/edit ≈2.16kB・/auth/callback ≈995B）／コア自己テスト 37 passed。dev/ライブ Supabase 接続は本番スキーマ未適用のため未実施。
+- **残課題**: 本番認証は Supabase 側で schema 適用＋自分の UID を admins 登録＋ Google プロバイダ設定＋ Vercel env（`NEXT_PUBLIC_SUPABASE_URL` / `_ANON_KEY`）登録が揃って有効化。列名突き合わせの本番疎通は未検証。公開ステージをプレイヤーに繋ぐ導線・本番入口差し替えは M2。
+
+## こおりのぬけみち M1 本番有効化・検証（014）
+- **目的**: M1 残課題（本番認証の有効化／列名突き合わせの本番疎通確認）を解消。コードは無変更、env と Supabase/Google 設定のみで有効化。報告は `docs/014`。
+- **対象 Supabase プロジェクト**: ref `ayohmfzssjhcziqsvoqn`（URL `https://ayohmfzssjhcziqsvoqn.supabase.co`）。`supabase/schema.sql`（冪等）をマイグレーション `koori_no_nukemichi_schema` として適用済み。world/stage/admins＋RLS 9本＋`is_admin()`/`set_updated_at()`＋updated_at トリガ2本＋index5本。`get_advisors` は ERROR 0 件（WARN は設計意図通り／空テーブル由来で軽微）。
+- **env**: `.env.local` に `NEXT_PUBLIC_SUPABASE_URL`（ref ayohmfzssjhcziqsvoqn）＋ `NEXT_PUBLIC_SUPABASE_ANON_KEY`＝**新形式 publishable キー** `sb_publishable_...`（supabase-js ^2.108 で対応）。service_role は置かない。
+- **管理人登録**: Google ログイン後の本人（email `kei21.orange@gmail.com` / provider google）UID = `6b27d4ed-27b7-4223-ac59-87b70f0866a5` を `admins` に登録済み（1行）。
+- **本番疎通検証（合格部分）**: 本番アプリのエディタからの実通信で **列名突き合わせ OK**（world POST 201 / stage POST 201×2 / world PATCH 200 / GET 200）、**RLS 疎通 OK**（anon の公開行 select 可・未公開 stage/admins 不可視・anon 書き込みは 42501 拒否、すべて rollback 付き検証）、**章公開 OK**、**ステージ作成 OK**（created_by=管理人 UID / 座標 / FK 整合）。詳細は `docs/014`。
+- **★公開ブロッカー（M1 未完）**: `stage.author_moves` 列がスキーマ上 **`integer`** なのに、コード（`supabaseRepository.ts` の `publishStage`/`serializeMoves`、`StageRow`、`parseMoves`）は**文字列**（方向列 "RDLU"）を扱う型不整合。→ ステージ公開の PATCH が必ず失敗（`22P02 invalid input syntax for type integer`）し、stage は published=false / author_moves=null のまま。**対処**: ①本番 DB `alter table public.stage alter column author_moves type text using author_moves::text;`（全 null＝非破壊・適用可否ユーザー確認中）②`supabase/schema.sql` の同列を `integer`→`text` に正本修正（コード/SQL 編集＋コミット案件・別タスク）＋公開を再検証。これが **M1 完了の最後の 1 ピース**。補足: `createStage` が `order_in_world` 未指定で 0（並び不定・軽微）。
+- **ハマりどころ（要点）**: (A) Google プロバイダはトグル ON だけでなく **Client ID/Secret 両方入力＋Save 必須**（Auth ログの「設定リロード」で保存反映を判別）。(B) OAuth リダイレクトは `window.location.origin` 基準で、**`NEXT_PUBLIC_SITE_URL` は使われない** → Supabase の Redirect URLs に**実 origin/ポート**のコールバック（`.../lab/koori-no-nukemichi/auth/callback`）を登録。(C) admins 登録は**初回ログイン後**かつ登録後は**エディタをリロード**しないと admin 判定が更新されない。(D) dev は既定 3000、埋まっていると 3001 が自動選択されるので Redirect URLs は実ポートに合わせる。詳細は `docs/011` のトラブルシュート節にも追記。
+- **Vercel 残作業**: Vercel に `NEXT_PUBLIC_SUPABASE_URL` / `NEXT_PUBLIC_SUPABASE_ANON_KEY` 登録。Supabase の Redirect URLs / Site URL を本番ドメインに設定。公開ステージのプレイヤー導線・本番入口差し替えは M2。
+- **M2 要件メモ（記録のみ・未実装）**: 認証ユーザの**表示名 display_name 保存**。用途は公開ステージの作者名表示（anon からも見せたい／現状 `stage.created_by` は UID のみ）。第一候補＝`profiles` テーブル新設（`user_id`→`display_name`、`auth.users` 作成時トリガで自動投入、anon は display_name select 可、プロフィール拡張も載せやすい＝Supabase 標準）。代替＝`stage.created_by_name` 非正規化（最小だが名前変更追従せず）。最終方式は M2 着手時に確定。詳細は `docs/014` の「M2 要件メモ」。
+
+## こおりのぬけみち M2 P2（遊べる導線・章解放・30ステージ）
+- **目的**: 公開ステージを一般ユーザーが遊べる `/play` ルートを新設。M1 の公開ブロッカー（author_moves 型不整合）を修正し、本番 DB に 3 章 30 ステージを投入。
+- **新ルート**: `src/app/lab/koori-no-nukemichi/play/page.tsx`（全画面・夜固定・noindex）。`KooriPlay`（`next/dynamic ssr:false` ラッパー）→ `GameShell`（章選択→ステージ選択→プレイ遷移）。**既存 Coming Soon・/m0・/edit は不変**。本番入口差し替え（P7）はユーザー確認後。
+- **GameShell** (`player/GameShell.tsx` + `GameShell.module.css`): worldSelect → stageSelect → play の 3 状態を内部 state で管理。公開データのみ取得（`listWorlds(false)` / `listStages(worldId, false)`）。プレイ中は `GameApp` に `stage` / `onExit` / `onCleared` / `onSelectNext` を渡して委譲。
+- **WorldSelect** (`player/WorldSelect.tsx`): 章ボタン一覧。各章の `locked`・`clearedCount`・`total` を受け取りロック表示・進捗表示。
+- **StageSelect** (`player/StageSelect.tsx`): ステージボタン一覧。クリア済みステージに ✓ 印。一覧内 index で選択を返す（次ステージ遷移に使用）。
+- **progress.ts** (`player/progress.ts`): クリア済みステージ id を `localStorage`（キー `koori-no-nukemichi:cleared`）に永続化。`loadClearedIds()` / `markCleared(stageId)` の 2 API。SSR（window 不在）・プライベートモード（保存失敗）を安全にガード。
+- **章解放判定**: 第 1 章は常時解放。直前章の公開ステージを全クリアで次章が解放（`GameShell` 内 useMemo で算出）。`WorldSelect` はロック中の章を `disabled` + くすみ表示。
+- **GameApp 汎用化** (`player/GameApp.tsx`): `stage?: StageData`（直接渡し）/ `stageId?: string`（ID 指定・/m0 互換）のどちらでも動作する props に変更。`onExit` 未指定時は `/#lab` への Link にフォールバック（/m0 後方互換）。`onCleared(stageId)` / `onSelectNext` を追加し GameShell と連携。
+- **/m0 の env 非依存化**: M1 前は `createStageRepository()`（env で分岐）を使っていたが、env 有時に Supabase リポジトリを呼び出し存在しないステージ ID `s1` への 400 エラーが発生していた。`/m0` の `GameApp` からは `createStageRepository` を外し `LocalStageRepository` 直接使用に変更（env の有無に関係なくシードの `s1` を常に参照）。
+- **supabaseRepository の order 自動採番**: M1 の `createStage` は `order_in_world` 未指定で 0 固定になる問題があった。章内の既存最大 `order_in_world + 1` を採番するロジックを追加（`LocalStageRepository` との挙動統一）。
+- **本番 DB（3章 30ステージ投入）**: 第1層「つららの回廊」（4×4〜5×5, 易〜中）/ 第2層「氷結の迷宮」（5×5〜6×6, 中〜難）/ 第3層「極氷の試練」（6×6〜7×7, 難）各 10 ステージ。第3層は開放盤・唯一解（最短一意＋近接別解なし・avgSlide ≈ 3.2〜5.1）。管理人 UID `6b27d4ed-...` で全ステージを公開済み。
+- **ステージ生成スクリプト** (`scripts/koori-generate-stages.ts` / `koori-emit-sql.ts` / `koori-generate-chapter3.ts` / `koori-emit-chapter3-sql.ts`): 章 1・2 と章 3 で別ジェネレータ（難易度方針の違い）。`npx tsx` で実行、SQL を stdout に吐いて Supabase SQL Editor に貼り付け。`koori-calibrate.ts`（構文エラーの検証用使い捨て）は削除済み。
+- **検証**: `npx tsc --noEmit` 0 エラー。
+- **残課題**: アート差し込み（仮素材 SVG 使用中）、`?s=<stageId>` 直行受け口（ディープリンク）、Coming Soon 正式置換（P7・本番入口差し替え）、章解放の本番 3 章実機確認。
 - ページ構成を `Header → Hero → LatestActivity → LinkCards → Laboratory → Contact → Footer` に再整理。
 - React Three Fiber 基盤を導入（three / @react-three/fiber / @react-three/drei / @react-three/postprocessing / @types/three）。`useReducedMotion` で動きを抑制可能。
 - Hero に案A（ロゴ＋軌道）の `HeroVisual` を、Contact に案B（光る星）の `ContactVisual` を配置。（比較用 `/hero3d-preview` ページと統合シーン `HeroScene3D` は 005 で削除。）
