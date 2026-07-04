@@ -3,6 +3,7 @@ import Link from 'next/link';
 import { notFound } from 'next/navigation';
 import { Header } from '@/components/Header/Header';
 import { Footer } from '@/components/Footer/Footer';
+import { BlogComments } from '@/components/Blog/BlogComments';
 import { getAllPostMeta, getPost } from '@/lib/blog';
 import { profile } from '@/data/profile';
 import styles from './article.module.css';
@@ -84,6 +85,8 @@ export default async function BlogArticlePage({ params }: Props) {
           </header>
 
           <div className={styles.body} dangerouslySetInnerHTML={{ __html: post.html }} />
+
+          <BlogComments slug={post.slug} />
 
           <footer className={styles.foot}>
             <Link href="/blog" className={styles.back}>

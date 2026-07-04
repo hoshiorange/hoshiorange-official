@@ -192,6 +192,7 @@ public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 - **LP**: `src/data/lp.ts` の配列に足すと `/lp/[slug]` が増える（SSG）。初期3候補: stream-buddy / ai-digest / ai-stretch（文言はドラフト、ユーザーレビューで差し替え）。index 許可・sitemap 掲載
 - **計測**: 3段ファネル view / cta_click / signup ＋ UTM（sessionStorage 引き継ぎ）＋匿名訪問者ID（localStorage `hoshiorange-lp-visitor`）→ Supabase `lp_event`。事前登録は `lp_signup`（product+email ユニーク、重複は 23505 を「登録済み」表示に変換）。env 無しでは計測 no-op・LP 表示は正常
 - **Supabase**: `supabase/lp-schema.sql`（冪等）を本番 ref ayohmfzssjhcziqsvoqn に `lp_funnel_schema` として適用済み。RLS: anon/authenticated insert のみ・select は is_admin() のみ・update/delete 不可。advisors ERROR 0（insert 開放 WARN は設計意図）
+- **ブログコメント**: 記事下に `BlogComments`（クライアント取得、SSG と両立）。名前任意（空=「名無しさん」）＋本文（≤1000字）＋日時表示・即時公開（承認制なし）。`supabase/blog-comments.sql` → `blog_comment` テーブル（`blog_comments_schema` 適用済み）。RLS: select 全員可・insert 開放・delete は is_admin() のみ（スパム削除用）。env 無しは「準備中」表示
 - **判定基準**: 登録5人 or ユニーククリック50超で開発 GO（worklog 個人開発/2026-07-04_月1万円プロダクト検証計画）
 - **依存追加**: gray-matter / unified / remark-parse / remark-gfm / remark-rehype / rehype-stringify / rehype-slug / rehype-highlight
 - **ナビ**: Header/Footer のアンカーを `/#...` 形式に変更し Blog を追加（ブログ等の別ページからも機能させるため）
