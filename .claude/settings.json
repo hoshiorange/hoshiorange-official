@@ -23,7 +23,18 @@
       "PowerShell(ForEach-Object *)",
       "PowerShell(Measure-Object *)",
       "PowerShell(Test-Path *)",
-      "PowerShell(Format-Hex *)"
+      "PowerShell(Format-Hex *)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch --prune:*)",
+      "Bash(git branch -d:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)"
+    ],
+    "ask": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)"
     ]
   }
 }
