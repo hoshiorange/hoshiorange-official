@@ -9,6 +9,7 @@ export type LinkIcon =
   | "youtube"
   | "twitcasting"
   | "github"
+  | "zenn"
   | "note"
   | "blog"
   | "mail";
@@ -58,6 +59,14 @@ export const links: LinkItem[] = [
     icon: "github",
     description: "個人開発・OSS・実験のコード置き場。",
     url: "https://github.com/hoshiorange/",
+  },
+  {
+    id: "zenn",
+    label: "Zenn",
+    category: "tech",
+    icon: "zenn",
+    description: "技術記事はここに書いています。",
+    url: "https://zenn.dev/hoshiorange",
   },
 ];
 
