@@ -41,11 +41,7 @@ export default function AboutPage() {
 
             <h2>連絡先</h2>
             <p>
-              メール:{' '}
-              <span className={styles.placeholder}>{profile.contactEmail}</span>
-            </p>
-            <p>
-              SNS 経由でのご連絡も受け付けています。詳しくは
+              ご連絡は SNS 経由で受け付けています。詳しくは
               <Link href="/contact">お問い合わせページ</Link>
               をご覧ください。
             </p>

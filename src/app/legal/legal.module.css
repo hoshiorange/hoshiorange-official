@@ -62,18 +62,6 @@
   color: var(--fg);
 }
 
-.placeholder {
-  color: var(--accent-soft);
-  background: color-mix(in srgb, var(--accent) 14%, transparent);
-  border-radius: 6px;
-  padding: 0.05em 0.4em;
-}
-
-.contactExtra {
-  margin-top: -40px;
-  padding-bottom: 80px;
-}
-
 .foot {
   margin-top: 48px;
   padding-top: 24px;
