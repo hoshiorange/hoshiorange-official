@@ -1,7 +1,7 @@
 # 実装担当メモ
 
 過去の詳細実装ログ（こおりのぬけみち M0〜M2 の逐次経緯、サイト構成変更002〜005 等）は
-Obsidian Vault `C:\git\note\worklog\hoshiorange-official\2026-07-07_implementation-notes移設アーカイブ.md`
+Obsidian Vault `C:\git\note\projects\hoshiorange-official\logs\2026-07-07_implementation-notes移設アーカイブ.md`
 に全文移設済み。個別の作業ログは同フォルダの日付ファイル（`docs/NNN` 相当）も参照。
 このファイルには今後の実装で常に必要なルール・仕様・制約・未解決の残課題のみを残す。
 
@@ -138,7 +138,7 @@ public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 
 ## 作業ルール
 - `main`・`develop` への直接コミット・プッシュ禁止（feature ブランチは develop から切り、PR は develop 宛て）
-- 作業のたびに worklog（`C:\git\note\worklog\hoshiorange-official\YYYY-MM-DD_作業名.md`）を作成・更新
+- 作業のたびに worklog（`C:\git\note\projects\hoshiorange-official\logs\YYYY-MM-DD_作業名.md`）を作成・更新
 - 仕様変更・追加実装の都度このファイルを更新
 
 ## マージ後の定例フロー

@@ -25,8 +25,8 @@ hoshiorange の公式ハブサイト。各 SNS（X / YouTube 等）・ブログ�
 - PR が develop にマージされたら、ローカルを `develop` に切り替えて `git pull` で最新化し、マージ済みの feature ブランチはローカル・リモートとも削除する。次の作業は最新の develop から新しい feature ブランチを切って始める。
 
 ## ドキュメント管理ルール
-- グローバル CLAUDE.md の作業ドキュメント運用を必須とする（作業のたびに `C:\git\note\worklog\hoshiorange-official\YYYY-MM-DD_作業名.md` を作成・更新）
-- 旧 docs/NNN（001〜014）は Obsidian Vault（`worklog/hoshiorange-official/YYYY-MM-DD_NNN_作業名.md`）へ移行済みで、リポジトリからは削除した。本文中の「docs/NNN」参照は Vault の同名ファイルを指す
+- グローバル CLAUDE.md の作業ドキュメント運用を必須とする（作業のたびに `C:\git\note\projects\hoshiorange-official\logs\YYYY-MM-DD_作業名.md` を作成・更新）
+- 旧 docs/NNN（001〜014）は Obsidian Vault（`projects/hoshiorange-official/logs/YYYY-MM-DD_NNN_作業名.md`）へ移行済みで、リポジトリからは削除した。本文中の「docs/NNN」参照は Vault の同名ファイルを指す
 
 ## PR 作成時の注意
 - body に関する共通注意（`\n` エスケープ禁止）はグローバル CLAUDE.md を参照
