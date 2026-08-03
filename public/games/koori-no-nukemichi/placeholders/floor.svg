@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="128" height="128" viewBox="0 0 128 128">
+  <!-- 仮素材: 通常床（滑らず止まれる）。 -->
+  <rect x="6" y="6" width="116" height="116" rx="10" fill="#49507a"/>
+  <rect x="22" y="22" width="84" height="84" rx="6" fill="none" stroke="#6a72a6" stroke-width="3" stroke-dasharray="10 8"/>
+</svg>

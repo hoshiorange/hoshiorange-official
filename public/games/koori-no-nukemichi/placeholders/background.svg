@@ -1,0 +1,13 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="160" height="160" viewBox="0 0 160 160">
+  <!-- 仮素材: 背景（夜×氷×オーロラ）。 -->
+  <rect width="160" height="160" fill="#060814"/>
+  <ellipse cx="40" cy="36" rx="90" ry="50" fill="#5046c8" opacity="0.28"/>
+  <ellipse cx="128" cy="120" rx="80" ry="46" fill="#2850b4" opacity="0.24"/>
+  <g fill="#ffffff">
+    <circle cx="24" cy="28" r="1.6"/>
+    <circle cx="120" cy="40" r="1.2"/>
+    <circle cx="92" cy="96" r="1.6"/>
+    <circle cx="48" cy="120" r="1.2"/>
+    <circle cx="140" cy="80" r="1.4"/>
+  </g>
+</svg>

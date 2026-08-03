@@ -1,0 +1,40 @@
+{
+  "permissions": {
+    "allow": [
+      "PowerShell(git status *)",
+      "PowerShell(git log *)",
+      "PowerShell(git diff *)",
+      "PowerShell(git show *)",
+      "PowerShell(git branch *)",
+      "PowerShell(git remote *)",
+      "PowerShell(git fetch *)",
+      "PowerShell(git ls-files *)",
+      "Bash(git fetch *)",
+      "PowerShell(npx tsc --noEmit)",
+      "Bash(npx tsc --noEmit)",
+      "PowerShell(npm run build)",
+      "Bash(npm run build)",
+      "PowerShell(Get-ChildItem *)",
+      "PowerShell(Get-Item *)",
+      "PowerShell(Get-Content *)",
+      "PowerShell(Select-Object *)",
+      "PowerShell(Select-String *)",
+      "PowerShell(Where-Object *)",
+      "PowerShell(ForEach-Object *)",
+      "PowerShell(Measure-Object *)",
+      "PowerShell(Test-Path *)",
+      "PowerShell(Format-Hex *)",
+      "Bash(git push:*)",
+      "Bash(git pull:*)",
+      "Bash(git fetch --prune:*)",
+      "Bash(git branch -d:*)",
+      "Bash(gh pr create:*)",
+      "Bash(gh pr view:*)",
+      "Bash(gh pr list:*)"
+    ],
+    "ask": [
+      "Bash(git push --force:*)",
+      "Bash(git push -f:*)"
+    ]
+  }
+}

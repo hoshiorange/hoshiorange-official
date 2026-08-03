@@ -7,11 +7,13 @@ import { ThemeToggle } from '@/components/ThemeToggle/ThemeToggle';
 import { profile } from '@/data/profile';
 import styles from './Header.module.css';
 
+// ブログ等の別ページからでも機能するよう、アンカーは `/#...` 形式にする
 const nav = [
-  { href: '#links', label: 'Links' },
-  { href: '#lab', label: 'Laboratory' },
-  { href: '#latest', label: 'Streaming' },
-  { href: '#contact', label: 'Contact' },
+  { href: '/#links', label: 'Links' },
+  { href: '/#lab', label: 'Laboratory' },
+  { href: '/blog', label: 'Blog' },
+  { href: '/#latest', label: 'Streaming' },
+  { href: '/#contact', label: 'Contact' },
 ];
 
 export function Header() {
@@ -28,7 +30,7 @@ export function Header() {
   return (
     <header className={`${styles.header} ${scrolled ? styles.scrolled : ''}`}>
       <div className={styles.inner}>
-        <Link href="#top" className={styles.brand} aria-label={`${profile.displayName} ホーム`}>
+        <Link href="/" className={styles.brand} aria-label={`${profile.displayName} ホーム`}>
           <HoshiLogo width={32} height={32} />
           <span className={styles.brandText}>
             <span className={styles.brandName}>{profile.displayName}</span>

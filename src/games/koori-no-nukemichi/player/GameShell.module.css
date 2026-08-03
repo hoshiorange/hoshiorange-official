@@ -1,0 +1,194 @@
+/* ============================================================
+   こおりのぬけみち プレイヤーシェル（章選択 / ステージ選択 / プレイ）
+   - 全画面・夜テーマ固定。サイトのテーマ変数には依存させず夜の配色を固定する。
+   - プレイ中（GameApp）は GameApp 自身が全画面 fixed で描画するため、
+     ここのレイアウトは章選択・ステージ選択の 2 画面で使う。
+   ============================================================ */
+
+.root {
+  position: fixed;
+  inset: 0;
+  z-index: 50;
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  color: #e8ecff;
+  background:
+    radial-gradient(ellipse at 20% 0%, rgba(80, 70, 200, 0.32), transparent 55%),
+    radial-gradient(ellipse at 85% 100%, rgba(40, 80, 180, 0.28), transparent 55%),
+    #060814;
+  font-family: var(--font-body), 'Noto Sans JP', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* ---- 上部バー ---- */
+.topbar {
+  position: sticky;
+  top: 0;
+  z-index: 3;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 16px;
+  background: linear-gradient(to bottom, rgba(6, 8, 20, 0.9), rgba(6, 8, 20, 0.6));
+  backdrop-filter: blur(6px);
+}
+
+.back {
+  justify-self: start;
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 14px;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  color: #c3c9e6;
+  border: 1px solid rgba(255, 255, 255, 0.16);
+  background: rgba(20, 24, 50, 0.5);
+  cursor: pointer;
+  transition: border-color 0.2s ease, color 0.2s ease;
+}
+.back:hover {
+  border-color: #ff8c2a;
+  color: #ff8c2a;
+}
+
+.title {
+  justify-self: center;
+  margin: 0;
+  font-family: var(--font-display), var(--font-body), sans-serif;
+  font-size: clamp(1rem, 3.4vw, 1.35rem);
+  font-weight: 700;
+  text-align: center;
+}
+
+.spacer {
+  justify-self: end;
+}
+
+/* ---- 一覧コンテンツ ---- */
+.content {
+  width: 100%;
+  max-width: 720px;
+  margin: 0 auto;
+  padding: clamp(16px, 4vw, 32px);
+}
+
+.lead {
+  color: #9aa3c7;
+  font-size: 0.95rem;
+  margin: 0 0 18px;
+  line-height: 1.6;
+}
+
+.list {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.itemBtn {
+  width: 100%;
+  text-align: left;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px 18px;
+  border-radius: 16px;
+  color: #e8ecff;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(20, 24, 50, 0.6);
+  cursor: pointer;
+  transition: border-color 0.2s ease, background 0.2s ease, transform 0.12s ease;
+}
+.itemBtn:hover {
+  border-color: #ff8c2a;
+  background: rgba(28, 32, 64, 0.7);
+}
+.itemBtn:active {
+  transform: translateY(1px);
+}
+
+/* 未解放（ロック）の章: くすませて操作不可に。 */
+.itemLocked {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+.itemLocked:hover {
+  border-color: rgba(255, 255, 255, 0.14);
+  background: rgba(20, 24, 50, 0.6);
+}
+.itemLocked:active {
+  transform: none;
+}
+
+/* タイトル＋メタ（進捗 / 解放条件）の縦並び。 */
+.itemBody {
+  display: flex;
+  flex-direction: column;
+  gap: 3px;
+  min-width: 0;
+}
+.itemMeta {
+  font-size: 0.78rem;
+  color: #8b94be;
+}
+
+/* クリア印（右寄せのチェック）。 */
+.clearMark {
+  flex: none;
+  margin-left: auto;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.6rem;
+  height: 1.6rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0b0d1a;
+  background: linear-gradient(135deg, #8be0b0, #34c98a);
+}
+
+.index {
+  flex: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2rem;
+  height: 2rem;
+  border-radius: 999px;
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: #0b0d1a;
+  background: linear-gradient(135deg, #ffb066, #ff8c2a);
+}
+
+.itemTitle {
+  font-size: 1rem;
+  font-weight: 600;
+}
+
+.empty,
+.loading {
+  color: #7f89b8;
+  font-size: 0.9rem;
+  padding: 8px 0;
+}
+.error {
+  color: #ff9b9b;
+  font-size: 0.9rem;
+  padding: 8px 0;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .back,
+  .itemBtn {
+    transition: none;
+  }
+}
