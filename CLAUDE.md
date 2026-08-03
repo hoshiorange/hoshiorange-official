@@ -28,6 +28,13 @@ hoshiorange の公式ハブサイト。各 SNS（X / YouTube 等）・ブログ�
 - グローバル CLAUDE.md の作業ドキュメント運用を必須とする（作業のたびに `C:\git\note\projects\hoshiorange-official\logs\YYYY-MM-DD_作業名.md` を作成・更新）
 - 旧 docs/NNN（001〜014）は Obsidian Vault（`projects/hoshiorange-official/logs/YYYY-MM-DD_NNN_作業名.md`）へ移行済みで、リポジトリからは削除した。本文中の「docs/NNN」参照は Vault の同名ファイルを指す
 
+## レヴェリー戦略指示（directives/）
+- レヴェリーからの戦略指示は `directives/` に置かれる。**セッション開始時に `directives/` を確認し**、未対応の指示があれば対応する（Reverie decisions/0029）
+- **週次レポート義務**（Reverie decisions/0030、2026年8月分から適用）:
+  - 毎週のレヴェリー会議をトリガー（提出日）として、週次レポートを `reports/` に残す。形式自由、目的に対する進捗が分かること。活動が薄い週は「活動なし」で可
+  - 月次レポートは月初の最初のレヴェリー会議で週次分を束ねて確定する
+  - 材料となる記録（worklog）を欠かさないこと（未提出時はレヴェリーが worklog を材料に代行生成することがある）
+
 ## PR 作成時の注意
 - body に関する共通注意（`\n` エスケープ禁止）はグローバル CLAUDE.md を参照
 
