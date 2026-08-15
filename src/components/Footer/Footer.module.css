@@ -41,6 +41,19 @@
 .nav a:hover {
   color: var(--accent);
 }
+.legalNav {
+  display: inline-flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+}
+.legalNav a {
+  font-size: 0.76rem;
+  color: var(--fg-muted);
+  transition: color 0.2s ease;
+}
+.legalNav a:hover {
+  color: var(--accent);
+}
 .copy {
   font-size: 0.78rem;
   color: var(--fg-muted);

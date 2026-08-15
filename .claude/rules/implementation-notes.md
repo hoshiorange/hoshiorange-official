@@ -149,3 +149,12 @@ public/games/koori-no-nukemichi/placeholders/  ← 仮素材SVG
 - `src/data/links.ts` の URL を埋めて `comingSoon: true` を外す
 - 環境変数を本番（Vercel）に登録：`YOUTUBE_API_KEY` / `YOUTUBE_CHANNEL_ID` / `NEXT_PUBLIC_X_USERNAME` / `NEXT_PUBLIC_SITE_URL`
 - 画像最適化したい場合は YouTube サムネを Next.js Image の最適化対象に戻す（現在 `unoptimized`）
+
+## AdSense 申請対応（2026-07-09、feature/adsense-preparation）
+- `/privacy`（プライバシーポリシー）/ `/about`（運営者情報）/ `/contact`（独立した問い合わせページ、既存 `Contact` コンポーネントを流用）を追加。共通スタイルは `src/app/legal/legal.module.css`。Footer に「運営者情報」「プライバシーポリシー」の法的リンク行を追加（`Footer.module.css` の `.legalNav`）。sitemap.ts にも3ページを追加。
+- `src/data/profile.ts` に `operatorBio` を追加。**ユーザーが実プロフィールに差し替える必要あり**（AdSense 申請前に必須）。連絡先メールアドレスは掲載しない方針（2026-07-18 ユーザー指示）。連絡手段は SNS 経由のみ（/contact の既存 Contact コンポーネント）。
+- **未解決（このタスクのスコープ外）**:
+  - ドメイン未取得（`NEXT_PUBLIC_SITE_URL` は `localhost` のまま）。AdSense はカスタムドメイン必須のため、申請前にドメイン取得＋ Vercel 本番デプロイ＋環境変数設定が必要。
+  - 公開記事が実質1本のみ（`content/blog/` に `published: true` は `2026-07-04-blog-start.md` の1件のみ）。AdSense 審査は一般に10〜20本以上の独自コンテンツが目安とされるため、申請前に記事を増やす必要あり（コンテンツ・デザイン担当と要調整）。
+  - ads.txt はサイト未追加のため未作成（Publisher ID が発行されてから設置。手順は Obsidian Vault の申請手順書参照）。
+  - Google Analytics（gtag）は未導入。Vercel Web Analytics のみ導入済み（プライバシーポリシーにはその旨を記載）。

@@ -20,7 +20,12 @@ export function Footer() {
           <a href="/#lab">Laboratory</a>
           <a href="/blog">Blog</a>
           <a href="/#latest">Streaming</a>
-          <a href="/#contact">Contact</a>
+          <a href="/contact">Contact</a>
+        </nav>
+
+        <nav aria-label="サイトポリシー" className={styles.legalNav}>
+          <a href="/about">運営者情報</a>
+          <a href="/privacy">プライバシーポリシー</a>
         </nav>
 
         <p className={styles.copy}>
